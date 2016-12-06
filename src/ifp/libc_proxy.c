@@ -153,14 +153,14 @@ getcwd (char *buf, size_t size)
   return libc_interface->getcwd (buf, size);
 }
 
-int
-scandir (const char *dir, struct dirent ***namelist,
-         int (*select_) (const struct dirent *),
-         int (*compar_) (const void *, const void *))
-{
-  ifp_check_interface ();
-  return libc_interface->scandir (dir, namelist, select_, compar_);
-}
+//int
+//scandir (const char *dir, struct dirent ***namelist,
+//         int (*select_) (const struct dirent *),
+//         int (*compar_) (const void *, const void *))
+//{
+//  ifp_check_interface ();
+//  return libc_interface->scandir (dir, namelist, select_, compar_);
+//}
 
 void
 free (void *ptr)

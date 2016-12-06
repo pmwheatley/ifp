@@ -83,7 +83,7 @@ struct ifp_libc_interface
   char *(*getcwd) (char *, size_t);
   int (*scandir) (const char *, struct dirent ***,
                   int (*) (const struct dirent *),
-                  int (*) (const void *, const void *));
+                  int (*) (const struct dirent **, const struct dirent **));
   void (*free) (void *);
 
   int (*open_2) (const char *, int);
