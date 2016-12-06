@@ -36,7 +36,8 @@ $(DIRECTORY): $(ARCHIVE)
 	mkdir -p $(DIRECTORY)
 	cd $(DIRECTORY); \
 		gunzip -c <../$(ARCHIVE) | tar xvf -; \
-		patch -i ../$(PATCHES)/alan2.patch -Np1
+		patch -i ../$(PATCHES)/alan2.patch -Np1; \
+		sed -i 's/getline/getline2/g' ./interpreter/parse.c
 
 $(PLUGINS)/$(DSO): $(HEADER)_plugin.o $(DIRECTORY)
 	mkdir -p $(PLUGINS)
