@@ -40,7 +40,11 @@ $(DIRECTORY): $(ARCHIVE)
 	cd $(DIRECTORY); gunzip -c <../$(ARCHIVE) | tar xvf -
 	cd $(DIRECTORY); \
 		patch -i ../$(PATCHES)/geas_cheapglk.patch -Np1; \
-		patch -i ../$(PATCHES)/geas.patch -Np1
+		patch -i ../$(PATCHES)/geas.patch -Np1; \
+		echo "#include <assert.h>" >> geas-core/general.hh; \
+		echo "#include <stdlib.h>" >> geas-core/general.hh; \
+		sed -i '4i\#include <algorithm>' geas-core/istring.cc; \
+		sed -i 's/geas_implementation::get_obj_name/get_obj_name/g' geas-core/geas-impl.hh
 
 $(PLUGINS)/$(DSO): $(HEADER)_plugin.o $(DIRECTORY)
 	mkdir -p $(PLUGINS)
