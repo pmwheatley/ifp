@@ -75,7 +75,8 @@ $(DIRECTORY): $(ARCHIVE) $(ARCHIVE_2) $(ARCHIVE_3)
 		patch -i ../$(PATCHES)/tads3_askf.patch -Np1; \
 		unzip -aa ../$(ARCHIVE_2); \
 		rm tads2/os.h; \
-		unzip -aa ../$(ARCHIVE_3)
+		unzip -aa ../$(ARCHIVE_3); \
+		echo "#include <sys/types.h>" >> os.h
 	cd $(DIRECTORY); \
 		$(MAKE) CXXFLAGS='$(GARGOYLE_CFLAGS)' \
 		     CFLAGS='$(GARGOYLE_CFLAGS)' $(GARGOYLE_OBJECTS)
