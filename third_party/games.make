@@ -39,7 +39,7 @@ $(DERIVATIVES):
 			cosmos.da4 cosmos.da5 cosmos.ins cosmos.ttl \
 			cosmos.bat runc.exe
 	cd $(GAMES); echo "busted.dat" \
-			| cpio -ocv >../../$(DERIVATIVES)/busted.cpio
+			| cpio -H newc -ov >../../$(DERIVATIVES)/busted.cpio
 	bzip2 <$(GAMES)/time.sna >$(DERIVATIVES)/time.sna.bz2
 	bzip2 <$(GAMES)/hamper.taf >$(DERIVATIVES)/hamper.taf.bz2
 	cd $(GAMES); \
