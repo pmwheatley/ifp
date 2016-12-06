@@ -1,0 +1,199 @@
+diff -Naur advsys/advdbs.c advsys_new/advdbs.c
+--- advsys/advdbs.c	Sat Feb 23 19:42:56 2002
++++ advsys_new/advdbs.c	Sat Feb 23 21:34:48 2002
+@@ -47,15 +47,12 @@
+ static glui32 slen;	/* save area length */
+ 
+ /* db_init - read and decode the data file header */
+-void db_init(frefid_t name)
++void db_init(strid_t stream)
+ {
+     int woff,ooff,aoff,voff,n;
+ 
+-    /* open the data file */
+-	datafd = glk_stream_open_file(name, filemode_Read, 0);
+-    
+-	// if (datafd == NULL)
+-	//	error("can't open data file");
++	/* save the stream passed in */
++	datafd = stream;
+ 
+ 	/* read the header */
+     if (glk_get_buffer_stream(datafd,hdr,HDR_SIZE) != HDR_SIZE)
+@@ -389,8 +386,7 @@
+ }
+ 
+ /* setvalue - set the value of a variable in the variable table */
+-int setvalue(n,v)
+-  int n,v;
++int setvalue(int n, int v)
+ {
+     if (n < 1 || n > vcount)
+ 	nerror("variable number out of range: %d",n);
+diff -Naur advsys/advint.c advsys_new/advint.c
+--- advsys/advint.c	Sat Feb 23 19:42:56 2002
++++ advsys_new/advint.c	Sat Feb 23 19:38:35 2002
+@@ -14,6 +14,10 @@
+ /* global variables */
+ jmp_buf restart;
+ 
++/* Startup variables. */
++extern char     *glkstart_message;
++extern strid_t  glkstart_gamestream;
++
+ /* CHANGED TO WORK WITH GLK */
+ /* Modernize it */
+ void play(void);
+@@ -29,7 +33,7 @@
+     char *fname,*lname;
+     int rows,cols;
+ 
+-	frefid_t file;
++	strid_t stream;
+ 
+ 	window = glk_window_open(0, 0, 0, wintype_TextBuffer, WINDOW);
+ 	screen = glk_window_get_stream(window);
+@@ -49,16 +53,30 @@
+     rows = 24;
+     cols = 80;
+ 
++	/* Handle startup errors here. */
++	if (glkstart_message != NULL)
++		error(glkstart_message);
++
+     /* initialize terminal i/o */
+     trm_init(rows,cols,lname);
+ 
+-	/* Get the file reference. */
+-	file = glk_fileref_create_by_prompt(fileusage_BinaryMode, filemode_Read, SOURCEFILE);
++	/* Use the command line file, or get a new file reference. */
++	if (glkstart_gamestream != NULL)
++		stream = glkstart_gamestream;
++	else {
++		frefid_t file;
++
++		file = glk_fileref_create_by_prompt
++                             (fileusage_BinaryMode, filemode_Read, SOURCEFILE);
++		stream = glk_stream_open_file(file, filemode_Read, 0);
++		if (stream == NULL)
++			error("can't open data file");
++	}
+ 
+ /* END OF CHANGES FOR GLK */
+ 
+     /* initialize the database */
+-    db_init(file);
++    db_init(stream);
+ 
+     /* play the game */
+     play();
+diff -Naur advsys/header.h advsys_new/header.h
+--- advsys/header.h	Sat Feb 23 19:42:56 2002
++++ advsys_new/header.h	Sat Feb 23 21:35:09 2002
+@@ -41,7 +41,7 @@
+ 
+ /* Exported by advdbs.c */
+ extern int db_save();
+-extern void db_init(frefid_t name);
++extern void db_init(strid_t stream);
+ extern int db_restore();
+ extern int db_restart();
+ extern void complement(char *adr,int len);
+@@ -65,7 +65,7 @@
+ extern int getoloc(int n);
+ extern int getaloc(int n);
+ extern int getvalue(int n);
+-extern int setvalue(n,v);
++extern int setvalue(int n,int v);
+ extern int getwloc(int n);
+ extern int getword(int n);
+ extern int putword(int n,int w);
+diff -Naur advsys/unix/Makefile advsys_new/unix/Makefile
+--- advsys/unix/Makefile	Sat Feb 23 19:42:56 2002
++++ advsys_new/unix/Makefile	Sat Feb 23 19:41:14 2002
+@@ -4,26 +4,28 @@
+ CC=gcc
+ 
+ # EDIT THESE TWO LINES TO REFLECT YOUR MACHINE's CONFIGURATION
+-INCLUDEDIR=-I glkterm -I..
+-LIBDIR=
++INCLUDEDIR=-I ../../xglk -I..
++LIBDIR=-L ../../xglk
+ 
++# Obtain LINKLIBS and GLKLIB definitions from Xglk.
++include ../../xglk/Make.xglk
+ 
+ CFLAGS = -O2 $(INCLUDEDIR)  $(LIBDIR)
+ 
+ O_FILES= ../advdbs.o ../advexe.o ../advint.o ../advjunk.o \
+ 	../advmsg.o ../advprs.o ../advtrm.o glkstart.o
+ 
+-H_FILES=../advcom.h ../advdbs.h ../advint.h ../header.h glkterm/glk.h
++H_FILES=../advcom.h ../advdbs.h ../advint.h ../header.h ../../xglk/glk.h
+ 
+ C_FILES= ../advdbs.c ../advexe.c ../advint.c ../advjunk.c \
+ 	../advmsg.c ../advprs.c ../advtrm.c glkstart.c
+ 
+-all: advint
++all: xadvint
+ 
+-advint: $(O_FILES)
+-	$(CC) -o advint $(O_FILES) glkterm/libglkterm.a -lcurses
++xadvint: $(O_FILES)
++	$(CC) -o xadvint $(O_FILES) $(LIBDIR) $(GLKLIB) $(LINKLIBS)
+ 
+ clean:
+-	rm -rf $(O_FILES) advint
++	rm -rf $(O_FILES) xadvint
+ 
+ $(O_FILES): $(H_FILES)
+diff -Naur advsys/unix/glkstart.c advsys_new/unix/glkstart.c
+--- advsys/unix/glkstart.c	Sat Feb 23 19:42:56 2002
++++ advsys_new/unix/glkstart.c	Sat Feb 23 19:36:43 2002
+@@ -2,23 +2,40 @@
+     Designed by Andrew Plotkin <erkyrath@eblong.com>
+     http://www.eblong.com/zarf/glk/index.html
+ 
+-    This is Unix startup code for the simplest possible kind of Glk
+-    program -- no command-line arguments; no startup files; no nothing.
+-
+-    Remember, this is a sample file. You should copy it into the Glk
+-    program you are compiling, and modify it to your needs. This should
+-    *not* be compiled into the Glk library itself.
++    Slightly improved Unix startup for ADVSYS Glk port.
++    Simon Baldwin <simon_baldwin@yahoo.com>
+ */
+ 
+ #include "glk.h"
+ #include "glkstart.h"
+ 
++/* Data items transferred to glk_main(). */
++char	*glkstart_message	= NULL;
++strid_t	glkstart_gamestream	= NULL;
++
++/* Rudimentary arguments structure. */
+ glkunix_argumentlist_t glkunix_arguments[] = {
++    { "", glkunix_arg_ValueFollows, "filename: The game file to load." },
+     { NULL, glkunix_arg_End, NULL }
+ };
+ 
++/* glkunix_startup_code()
++ *
++ * This always returns TRUE, even in error cases.  Errors are reported
++ * out of glk_main(), by checking the glkstart_message string.
++ */
+ int glkunix_startup_code(glkunix_startup_t *data)
+ {
++    /* Catch first argument as the game file to run. */
++    if (data->argc > 1) {
++        glkstart_gamestream = glkunix_stream_open_pathname
++                                                  (data->argv[1], FALSE, 1);
++        if (glkstart_gamestream == NULL) {
++            glkstart_message = "The game file could not be opened.\n";
++            return TRUE;
++        }
++    }
++
+     return TRUE;
+ }
+ 

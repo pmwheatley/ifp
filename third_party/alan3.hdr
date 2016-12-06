@@ -1,0 +1,20 @@
+# Alan3 games begin with "ALAN" followed by 0x03 as the version number.
+
+engine_type="Alan"
+engine_name="Alan"
+engine_version="3.0.5"
+
+acceptor_offset=0
+acceptor_length=5
+acceptor_pattern="^41 4c 41 4e 03$"
+
+author_name="Thomas Nilsson"
+engine_home_url="http://welcome.to/alan-if"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"Alan is a simple to use adventure (or interactive fiction) authoring language.
+  Read about it on the web site - http://welcome.to/alan-if\n"
+engine_copyright="Copyright (C) 2007 by Thomas Nilsson, Sweden.\n"

@@ -1,0 +1,35 @@
+# The Z-machine game file format, as it stands, doesn't really lend itself to
+# recognition - see the file /usr/share/misc/magic, or equivalent, for
+# evidence of this.  However, for us, what matters most is differentiating
+# Z-machine games from other IF games, not from all other files.  Here we're
+# looking for the first byte be 0x01 to 0x08 (the version number), and the
+# second be 0x00-0x0F (Z-machine uses only low nibble "flags", so far, anyway).
+# Moreover, we need to make a small gap in this recognition space for Alan,
+# which uses the first two bytes as its game version - currently 2.7 or 2.8.
+
+# It turn out that we can just about get away with this, since the only games
+# known to use Z-machine version 2 are older Zork I and Zork II, and for these
+# particular two games, "flags" is known to be 0x00.  So until, Alan goes to
+# version 3, we're okay.
+
+engine_type="Z-machine"
+engine_name="Frotz"
+engine_version="2.4.3"
+
+blorb_pattern="^5a 43 4f 44$"
+
+acceptor_offset=0
+acceptor_length=2
+acceptor_pattern="^(0[3-8] 0[0-9abcdef])|(0[1-2] 00)$"
+
+author_name="Stefan Jokisch"
+author_email="stefan.jokisch@gmx.de"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"An interpreter for all Infocom and other Z-machine games.  Complies with
+ standard 1.0 of Graham Nelson's specification.  Glk port by Tor Andersson.\n"
+engine_copyright="Frotz is GPL, copyright (c) 2006 Stefan Jokisch.\n
+It is GPL open source.\n"

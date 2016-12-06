@@ -1,0 +1,46 @@
+diff -Naur advsys/unix/Makefile advsys_new/unix/Makefile
+--- advsys/unix/Makefile	2007-08-09 20:57:50.000000000 -0700
++++ advsys_new/unix/Makefile	2007-08-09 21:10:10.000000000 -0700
+@@ -4,28 +4,33 @@
+ CC=gcc
+ 
+ # EDIT THESE TWO LINES TO REFLECT YOUR MACHINE's CONFIGURATION
+-INCLUDEDIR=-I ../../xglk -I..
+-LIBDIR=-L ../../xglk
++GLK=ifppi
++GLKDIR=../../../src/ifp
++INCLUDEDIR=-I $(GLKDIR) -I..
++LIBDIR=-L $(GLKDIR)
+ 
+ # Obtain LINKLIBS and GLKLIB definitions from Xglk.
+-include ../../xglk/Make.xglk
++include $(GLKDIR)/Make.$(GLK)
+ 
+-CFLAGS = -O2 $(INCLUDEDIR)  $(LIBDIR)
++CFLAGS = -fPIC -O2 $(INCLUDEDIR)  $(LIBDIR)
+ 
+ O_FILES= ../advdbs.o ../advexe.o ../advint.o ../advjunk.o \
+ 	../advmsg.o ../advprs.o ../advtrm.o glkstart.o
+ 
+-H_FILES=../advcom.h ../advdbs.h ../advint.h ../header.h ../../xglk/glk.h
++H_FILES=../advcom.h ../advdbs.h ../advint.h ../header.h $(GLKDIR)/glk.h
+ 
+ C_FILES= ../advdbs.c ../advexe.c ../advint.c ../advjunk.c \
+ 	../advmsg.c ../advprs.c ../advtrm.c glkstart.c
+ 
+-all: xadvint
++PLUGIN_LIBS = -L $(GLKDIR) $(GLKLIB) $(LINKLIBS)
++PLUGIN_OBJS = ../../advsys_plugin.o
++advsys-1.2.so: $(O_FILES) $(PLUGIN_OBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(O_FILES) $(PLUGIN_LIBS) $(PLUGIN_OBJS) -lc
+ 
+-xadvint: $(O_FILES)
+-	$(CC) -o xadvint $(O_FILES) $(LIBDIR) $(GLKLIB) $(LINKLIBS)
++all: advsys-1.2.so
+ 
+ clean:
+-	rm -rf $(O_FILES) xadvint
++	rm -rf $(O_FILES) advsys-1.2.so
+ 
+ $(O_FILES): $(H_FILES)

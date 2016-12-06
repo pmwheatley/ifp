@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This catalog conforms to "The Treaty of Babel, A community standard for
+    IF bibliography", Draft 7, 13 April 2006.
+    -->
+
+<!--
+    Note: the Babel download URL is expected to be "http://babel.ifarchive.org
+    /download", but can be reset by setting GAMEBOX_BABEL_URL.
+    -->
+
+<ifindex version="1.0" xmlns="http://babel.ifarchive.org/protocol/iFiction/">
+
+<!--
+    Template entry.  <identification><ifid> is mandatory for the treaty, and
+    Gamebox generates a game's location from that, prefixed with the Babel
+    download URL.  Because this may not be what you want (for example, games
+    held locally on disk), Gamebox implements <annotation><gamebox><about>,
+    letting you to specify the game location.
+
+    <story>
+      <identification>
+        <ifid>...</ifid>                *mandatory* (for correctness)
+        <format>...</format>            *mandatory* (for correctness)
+        <bafn>...</bafn>
+      </identification>
+      <bibliographic>
+        <title>...</title>              *mandatory* (for correctness)
+        <author>...</author>            *mandatory* (for correctness)
+        <firstpublished>...</firstpublished>
+        <genre>...</genre>
+        <description>
+          ...
+        </description>
+        <group>...</group>
+      </bibliographic>
+      <annotation>
+        <gamebox>
+          <about>...</about>            overrides url+IFID game location
+	  <group>...</group>
+        </gamebox>
+      </annotation>
+      <zcode>
+        <release>...</release>          recommended
+      </zcode>
+      <tads[2|3]>
+        <version>...</version>          recommended
+        <releasedate>...</releasedate>  recommended, overrides <firstpublished>
+      </tads[2|3]>
+    </story>
+-->
+
+<!--
+    Accuracy note: for now, some of the game property values below are either
+    uncertain or complete guesswork.  Dates may be wrong, genres are almost
+    certainly not taken from an accurate vocabulary, and lengths are usually
+    gut feeling or guesswork.
+
+    For now, that's okay, as this is a demonstration file only.  At some
+    point, however, these should be updated.
+-->
+
+<!--
+    Formatting note: Gamebox does not need an all-encompassing game group.
+    It automatically gathers together all items not enclosed in a group
+    and creates a top-level menu for them if required.  This standard group is
+    provided only to name the top level category, and as an example of how
+    to group games into separated categories.
+-->
+
+  <story>
+    <identification>
+      <ifid>GLULX-5-961209-FB0F3A3C</ifid>
+      <format>glulx</format>
+    </identification>
+    <bibliographic>
+      <title>Adventure</title>
+      <author>Will Crowther, Don Woods</author>
+      <description>The Interactive Original.  You are standing at the end of a road before a small brick building. Around you is a forest. A small stream flows out of the building and down a gully.</description>
+      <genre>Cave crawl</genre>
+      <firstpublished>1976</firstpublished>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/advent.blb</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+    <zcode>
+      <release>5</release>
+    </zcode>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>ALAN-2D96AA540055B3D8358F953A76123861</ifid>
+      <format>alan</format>
+    </identification>
+    <bibliographic>
+      <title>Bugged</title>
+      <author>Anssi Raisanen</author>
+      <description>As a fan of interactive fiction, you promised to your cousin, who also has taken an interest in text adventures, to try out his latest creation, even if his earlier attempts, honestly said, have left rather a lot to wish for.</description>
+      <genre>Surreal</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/bugged.zip</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>ALAN-C9DF1732494399694D3B8260F982DAA6</ifid>
+      <format>alan</format>
+    </identification>
+    <bibliographic>
+      <title>Enter the Dark</title>
+      <author>Peter R Shushmaruk</author>
+      <description>Darkness, where evil plays with the innocents of its victims. Blood pumping anxiety, of the horror sounding in the invisible distance. Shadows crossing the walls out of the corner of your eye. In the loneliness and silence, you think you are safe. Yet the creatures that manifest themselves behind you, creeping slowly to strike without warning. Its only you and the darkness...Or is it?.</description>
+      <genre>Horror</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/EnterTheDark.a3c</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>ADRIFT-400-D12D6FD3C8C65D448675EB7EC2F4E194</ifid>
+      <format>adrift</format>
+    </identification>
+    <bibliographic>
+      <title>To Hell in a Hamper</title>
+      <author>J.J. Guest</author>
+      <description>From the log of Professor Pettibone, eminent Victorian Balloonist: Twenty-fourth of February, 1876. The English Channel. Our Journey begins! A large crowd gathered this morning in Berkeley Square as we made our final preparations for what is to be one of the most daring expeditions ever undertaken; a journey around the world by balloon.</description>
+      <firstpublished>2003-08-02</firstpublished>
+      <genre>Historical, Humor, Travel</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/hamper.taf</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>ADVSYS-765B01E241F24E30143E9853BE77D45C</ifid>
+      <format>advsys</format>
+    </identification>
+    <bibliographic>
+      <title>Busted</title>
+      <author>Anonymous</author>
+      <group>Scumbag Software</group>
+      <description>Life at Hard Knocks University isn't all wine and roses, but you've become accustomed to the Kafka-esque administration, the fascistic locals and the rest of the entertainment that comes with studying at a large state-run university in a small agricultural community. Things are fine until one day when you come home to find a message on your answering machine...</description>
+      <firstpublished>1993-07-06</firstpublished>
+      <genre>Collegiate</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/busted.dat</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>AGT-03201-0000C54D</ifid>
+      <format>agt</format>
+    </identification>
+    <bibliographic>
+      <title>CosmoServe</title>
+      <author>Judith Pintar</author>
+      <description>You are in your office, which used to be a living room until the couch was taken over by a pile of papers and books. The spot in front of the computer is now the only unoccupied seat in the room. Lucky thing you don't do much entertaining.</description>
+      <firstpublished>1991</firstpublished>
+      <genre>Science Fiction, Satire</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/cosmos.zip</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>HUGO-30-64-69-12-04-99</ifid>
+      <format>hugo</format>
+    </identification>
+    <bibliographic>
+      <title>Spur</title>
+      <author>Kent Tessman</author>
+      <description>In retrospect, maybe all that cheap whiskey last night in Grady's wasn't such a brilliant idea.  Not the way the evil, glowing orb of the morning sun is burning a hole through your squinting eyes and right into the back of your head.  And especially since there's a guy with a six-shooter on his belt, ready to draw, standing thirty feet away and facing you.</description>
+      <firstpublished>1999-12-04</firstpublished>
+      <genre>Western</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/spur.hex</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>LEVEL9-013</ifid>
+      <format>level9</format>
+    </identification>
+    <bibliographic>
+      <title>Lords of Time</title>
+      <author>Ian Buxton, Sue Gazzard</author>
+      <group>Level 9 Computing</group>
+      <description>You are sitting in the comfort of your own home, debugging your latest program before submitting it for us to market. Suddenly there is a blinding flash...</description>
+      <firstpublished>1983</firstpublished>
+      <genre>Time Travel</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/time.sna</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>TADS2-3BDEFF84D73D4CE81FF4FE973611DCD8</ifid>
+      <format>tads2</format>
+    </identification>
+    <bibliographic>
+      <title>Toonesia</title>
+      <author>Jacob Weinstein</author>
+      <description>Oooh, that rascally rabbit!  You were out hunting him when he somehow got the jump on you, blindfolded you, and dumped you into a cell.  Well, you'll show him.  He'll be hasenpfefer by dinner tonight, or your name isn't Elmo Fuld.</description>
+      <firstpublished>1995</firstpublished>
+      <genre>Cartoon, Screen, Children's</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/toonesia.gam</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+    <tads2>
+      <version>1.1</version>
+      <releasedate>1995</releasedate>
+    </tads2>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>TADS3-A7F6C7FF21B2AB5252DD9E97FDBB7568</ifid>
+      <format>tads3</format>
+    </identification>
+    <bibliographic>
+      <title>Eric's Gift</title>
+      <author>Joao Mendes</author>
+      <description>Three-thirty in the morning. Turill Plaza is always empty at this hour. For about four years, you have been coming here, hoping... no, knowing you would find her.  And tonight, she may finally be here.</description>
+      <firstpublished>2002</firstpublished>
+      <genre>Science Fiction</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/ericgift.t3</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>ZCODE-6-960613-2183</ifid>
+      <format>zcode</format>
+    </identification>
+    <bibliographic>
+      <title>A Change in the Weather</title>
+      <author>Andrew Plotkin</author>
+      <description>The picnic is going full blast, which is exactly why you've wandered away from it. It's not that you don't like your new companions; it's just that after weeks of spending each day around them, a noisy weekend cook-out isn't the way to relax. Some exploration -- on your own -- is an appealing thought.</description>
+      <firstpublished>1996-06-13</firstpublished>
+      <genre>Fantasy</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/weather.z5</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+  <story>
+    <identification>
+      <ifid>CA1999AE30909B6A160A04E744236126</ifid>
+      <format>quest</format>
+    </identification>
+    <bibliographic>
+      <title>I Rescued Elvis from Communist Alien Jerks</title>
+      <author>Robert Sedler</author>
+      <description>You are standing in a large open field just outside your home town. It is a clear summer night with millions of stars all around you. You notice that one star seems to be moving. You can't be sure, but it almost seems as if it is getting closer.</description>
+      <firstpublished>2003</firstpublished>
+      <genre>Science Fiction, Humor</genre>
+    </bibliographic>
+    <annotation>
+      <gamebox>
+        <about>file:///usr/lib/games/ifp/elvis.cas</about>
+        <group>Gamebox Standard Games</group>
+      </gamebox>
+    </annotation>
+  </story>
+
+</ifindex>

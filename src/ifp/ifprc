@@ -1,0 +1,56 @@
+; vim: set syn=dosini:
+;
+; IFP configuration
+;
+; Copy this file to "~/.ifprc" to customize your IFP configuration.  Any file
+; "/etc/ifprc" contains system-wide IFP configuration that a "~/.ifprc" will
+; override.  The format of the file is DOS .ini.
+;
+; You can explicitly specify an IFP configuration file by setting a value for
+; IFP_CONFIGURATION, assigned to the path to the file before running an IFP
+; program.
+;
+
+; ----------------------------------------------------------------------------
+
+[DEFAULT]
+; Global configuration section.  This defines the plugin path, any list of
+; libraries in precedence order, and assorted other IFP values.
+
+; Plugin search path.  IFP defaults this if not set, but setting it here
+; silences warnings.  May be overridden with IF_PLUGIN_PATH.
+
+plugin_path=/usr/local/lib/ifp:/usr/lib/ifp
+
+
+; One possible set of pluggable Glk library preferences.  May be overridded
+; with IFP_GLK_LIBRARIES or by passing -glk <library> to an IFP program.  If
+; not specified, IFP defaults to xglk where DISPLAY is set, glkterm if TERM
+; is set, or cheapglk otherwise.
+
+; glk_libraries=xglk,glkterm,cheapglk
+
+
+; URL pause timeout and cache size (in bytes) before files are evicted from
+; the cache.  These values are the defaults in IFP.  May be overridden with
+; IFP_URL_TIMEOUT and IFP_CACHE_LIMIT.
+
+; url_timeout=100000
+; cache_limit=10485760
+
+
+; ----------------------------------------------------------------------------
+
+; Interpreter configuration sections.  Each section is introduced with the
+; interpreter name in [...] brackets.  To have a section apply to a specific
+; release of an interpreter, append the release number with a '-', for
+; example "[scare-1.3.3]".
+
+; The value of the 'options' property in interpreter configuration sections
+; is "command line options" to interpreter plugins when IFP activates a plugin.
+; For example, to always run Geas with a dedicated input window, uncomment
+; these two lines:
+
+; [geas]
+; options=-w
+

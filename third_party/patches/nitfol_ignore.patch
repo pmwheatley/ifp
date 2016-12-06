@@ -1,0 +1,24 @@
+diff -Naur nitfol/nitfol-0.5/nitfol.opt nitfol_new/nitfol-0.5/nitfol.opt
+--- nitfol/nitfol-0.5/nitfol.opt	Sat Oct 23 10:38:05 1999
++++ nitfol_new/nitfol-0.5/nitfol.opt	Tue Jun 10 21:17:18 2003
+@@ -3,7 +3,7 @@
+ # You can alter the 'default' part to change the game's default options.
+ 
+ # Longest name		Long	short	description                             type    default code
+-"Ignore errors"		ignore	i	"Ignore Z-machine strictness errors"	flag	0	{ ignore_errors = flag; }
++"Ignore errors"		ignore	i	"Ignore Z-machine strictness errors"	flag	1	{ ignore_errors = flag; }
+ Normally nitfol checks for illegal and undefined Z-machine behaviour and alerts the user.  If you're playing someone else's buggy game, this can be annoying and you should use this option.
+ 
+ "Inferior debugger"	fullname f	"For running under Emacs or DDD"	flag	0	{ fullname = flag; }
+diff -Naur nitfol/nitfol-0.5/startunix.c nitfol_new/nitfol-0.5/startunix.c
+--- nitfol/nitfol-0.5/startunix.c	Sun Oct 24 17:55:33 1999
++++ nitfol_new/nitfol-0.5/startunix.c	Tue Jun 10 21:19:08 2003
+@@ -368,7 +368,7 @@
+ typedef struct { const char *longname; char shortname; const char *description; option_type type; void (*int_func)(int); int defint; void (*str_func)(strid_t); strid_t defstream; void (*string_func)(const char *); const char *defstring; } option_option;
+ 
+ static option_option options[] = {
+-  { "ignore", 'i', "Ignore Z-machine strictness errors", option_flag, code_ignore, 0, NULL, NULL, NULL, NULL },
++  { "ignore", 'i', "Ignore Z-machine strictness errors", option_flag, code_ignore, 1, NULL, NULL, NULL, NULL },
+   { "fullname", 'f', "For running under Emacs or DDD", option_flag, code_fullname, 0, NULL, NULL, NULL, NULL },
+   { "command", 'x', "Read commands from this file", option_file, NULL, 0, code_command, NULL, NULL, NULL },
+   { "pirate", 'P', "Aye, matey", option_flag, code_pirate, 0, NULL, NULL, NULL, NULL },

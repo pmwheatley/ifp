@@ -1,0 +1,55 @@
+
+IFP is a plugin scheme for playing several different types of Interactive
+Fiction game files in a single unified game interpreter.
+
+It automatically determines how to play the game from the data in the game
+file, and handles all of the different game files seamlessly.  IFP has plugins
+for the following formats:
+
+    Z-machine, TADS, HUGO, Alan, Glulx, AGT, AdvSys, Level 9, Magnetic
+    Scrolls, Adrift, Quest, and Blorb
+
+For Blorb files, IFP recognizes ZCOD (Z-machine) and GLUL (Glulx) types.
+
+IFP directly handles compressed, gzipped, or bzipped game files, and game
+files, compressed or otherwise, in zip, tar, cpio or ar archives.  It also
+handles URL references to game files, compressed game files, or game archives.
+
+For details on building IFP, please see the file INSTALLING.  For details on
+how to link interpreters to IFP to create plugins, please see USING.  For
+notes on running games with IFP, please see RUNNING.  For details on IFP
+internals, please see INTERNALS.  The file Xglk.defs contains a few X resource
+definitions that help to improve the general look of xglk.
+ 
+IFP contains third-party resources and games:
+
+ Andrew Plotkin's xglk, glkterm, cheapglk, and Glulx; Evin Robertson's Nitfol
+ Z-machine interpreter; Thomas Nilsson's Alan2 interpreter; Thomas Nilsson's
+ Alan3 interpreter; Kent Tessman's Hugo interpreter; Michael J. Roberts' TADS
+ interpreters; Robert Masenten's AGiliTy AGT interpreter; David Betz and
+ Michael Chen's Advsys interpreter; Glen Summers' Level9 interpreter; Niclas
+ Karlsson's Magnetic Scrolls interpreter; Iain Merrick's Git interpreter
+ for Glulx; Stefan Jokisch's Frotz interpreter; Tor Andersson's Glk interfaces
+ for TADS and Frotz; Mark J. Tilford's Geas interpreter for Quest; Tor
+ Andersson's Gargoyle Glk library; Evin Robertson's Gtkglk library.
+
+ A Change In The Weather, Copyright 1995-6 by Andrew Plotkin; Bugged, Copyright
+ by Anssi Raisanen; Adventure (The Interactive Original), by Will Crowther and
+ Don Woods, reconstructed by Donald Ekman, David M. Baggett, and Graham Nelson;
+ Spur, Copyright 1995-1997 by Kent Tessman; Toonesia, Copyright 1995 by Jacob
+ Weinstein; Cosmoserve, Copyright 1991 by Judith Pintar and MadHatter
+ Productions; Busted, Copyright 1993 by Jon Drukman, Scumbag Software, Inc;
+ Lords of Time, Copyright Level 9 Computing; To Hell in a Hamper, Copyright
+ 2003 by J.J. Guest; Enter the Dark, Copyright by Peter R Shushmaruk; Eric's
+ Gift, Copyright 2002 by Joao Mendes; I Saved Elvis from Communist Alien Jerks,
+ Copyright 2003 by Robert Sedler.
+
+If you are an owner of one of the above and object to its inclusion in IFP,
+please let me know.
+
+Thanks to David Griffith, Matthew Krauss, Bob Newell, and Curt Siffert for
+their feedback, helpful comments, and ideas, following the first Alpha release
+of IFP, and to Gregory W. Kulczycki for regular builds of IFP for Mandrake
+Linux.
+
+Simon Baldwin, simon_baldwin@yahoo.com

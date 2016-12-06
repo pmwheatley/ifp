@@ -1,0 +1,54 @@
+diff -Naur nitfol/nitfol-0.5/Makefile nitfol_new/nitfol-0.5/Makefile
+--- nitfol/nitfol-0.5/Makefile	1999-10-24 17:54:05.000000000 -0700
++++ nitfol_new/nitfol-0.5/Makefile	2007-08-10 20:42:42.000000000 -0700
+@@ -68,9 +68,9 @@
+ 
+ # If you have cfunctions, comment in the right line.  If you don't even have
+ # true, use echo
+-CFUNCTIONS=echo
++#CFUNCTIONS=echo
+ CFUNCTIONS=true
+-CFUNCTIONS=cfunctions
++#CFUNCTIONS=cfunctions
+ 
+ 
+ # If you use yacc instead of bison, you MUST have either debugging enabled
+@@ -103,7 +103,7 @@
+ 
+ ALLFLAGS = -g
+ WARNS = -pedantic -Wall -W -Wshadow -Wpointer-arith -Wcast-align -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wbad-function-cast -Wwrite-strings
+-CFLAGS = -ansi $(WARNS) $(ALLFLAGS)
++CFLAGS = -fPIC -ansi $(WARNS) $(ALLFLAGS)
+ LIBS = -L$(GLKLIBDIR) $(OSLIBS) $(GLKLIB) $(LINKLIBS) $(EXTRALIBS)
+ LDFLAGS = $(ALLFLAGS)
+ 
+@@ -120,6 +120,7 @@
+ 	@echo "You must specify a Glk target. This makefile assumes the"
+ 	@echo "requested Glk library can be found in $(PATHTOGLK)/glkname/"
+ 	@echo " Command                      Looks in"
++	@echo "  make nitfol-0.5.so           $(PATHTOGLK), .."
+ 	@echo "  make xnitfol                 $(PATHTOGLK)/xglk/"
+ 	@echo "  make termnitfol              $(PATHTOGLK)/glkterm/"
+ 	@echo "  make cheapnitfol             $(PATHTOGLK)/cheapglk/"
+@@ -165,6 +166,12 @@
+ mpcmudnitfol: $(OBJS) startunix.o no_graph.o no_blorb.o no_snd.o
+ 	$(MAKE) nitfol GLKINCLUDEDIR=$(PATHTOGLK)/mudglk GLKLIBDIR=$(PATHTOGLK)/mudglk GLKMAKEFILE=Make.mpcmudglk "GLKSPECIFIC=startunix.c no_graph.c no_blorb.c no_snd.c" PRODUCT=$@
+ 
++EXTRA_OBJS = startunix.o graphics.o blorb.o no_snd.o
++PLUGIN_LIBS = -L ../../../src/ifp -lifppi
++PLUGIN_OBJS = ../../nitfol_plugin.o
++nitfol-0.5.so: $(OBJS) $(EXTRA_OBJS) $(POBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(OBJS) $(EXTRA_OBJS) $(PLUGIN_LIBS) $(PLUGIN_OBJS) -lc
+ 
+ .SUFFIXES:
+ .SUFFIXES: .c .o .h .y
+@@ -263,7 +270,7 @@
+ .PHONY: clean backup nitfol default all install uninstall realclean distclean
+ 
+ clean:
+-	$(RM) *~ *.o core TAGS $(EXECUTABLES)
++	$(RM) *~ *.o *.so core TAGS $(EXECUTABLES)
+ 
+ realclean: clean
+ 	$(RM) $(CSRCS:.c=.h) start*.[ch] nitfol.info nitfol.6 nitfol.html nitfol.dvi

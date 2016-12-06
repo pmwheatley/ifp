@@ -1,0 +1,311 @@
+
+Normally, IF interpreters are all Linux "main" programs, in the sense that they
+contain the symbol "main", to which Linux transfers control on process startup.
+
+More accurately, when they become Glk programs, their "main" comes from the Glk
+libraries, and they implement glkunix_startup_code() and glk_main(), to which
+the Glk "main" links.  But, they remain "main"-ish in their nature.
+
+They take an argument count and some string arguments, the last of which is
+always the game file to open and run, and they run until completion, either by
+returning from glk_main(), the Glk analog to "main", or by calling glk_exit(),
+the Glk analog to "exit(1)" (and quite why Glk always exits a program with a
+status code of 1 is a mystery, since 0 would be much more normal).
+ 
+The core concept of IFP is to build these programs as DSO libraries instead of
+as main programs, and to then dlopen() each to determine if it can run a game.
+When opening an interpreter DSO, IFP always uses RTLD_NOW to ensure right away
+that all of the interpreters required symbols are present.
+
+Rather than using normal dynamic symbol lookup, Glk and other function
+addresses are passed between the main program and interpreter DSOs explicitly,
+by negotiation between libifp and libifppi.  This avoids the need for the main
+program to export all of its symbols, something it that might be error-prone
+since symbols could clash between the main program and the DSO (and also
+between multiple loaded DSOs).
+
+IFP must export three symbols, though, so that Glk plugins can be loaded.
+These are glk_main, glkunix_startup_code, and glkunix_arguments.  This lets
+IFP use Glkloader's Glk library plugins directly.
+
+When it starts, the first thing an IFP binary does is to decide which Glk
+library to load, and load it.  It does this either by following a request for
+an explicit library, or by selecting a default from its environment or
+configuration file.  For this to work, IFP itself must contain the real main()
+function.  After IFP has loaded its Glk library, it calls the Glk library's
+main() function through shared object symbol lookup.  That main() function will
+then call glkunix_startup_code() and glk_main() back inside IFP.
+
+In this way, IFP can run both multiple Interactive Fiction game types and
+multiple Glk schemes, all from within a single executable program.  This lets
+you combine Glk libraries and interpreters in any combination you like.
+
+
+When a game interpreter calls glk_exit(), it has finished running.  It is
+expecting that the entire process will stop there (what else could remain to be
+done?).  However, for IFP, this is not entirely satisfactory.  It is useful if
+IFP can, when one game plugin finishes, run another, or maybe run the same
+game again.  In general, it is undesirable in a GUI for the application to shut
+down until the user shuts it down.
+
+IFP handles this by redirecting calls the interpreter makes to glk_exit()
+(remember that we pass it an interface structure containing the addresses of
+all Glk calls, so IFP gets to see every Glk call that an interpreter makes).
+When the interpreter calls glk_exit(), IFP arranges for one of its functions
+gets the call instead.  Using the miracle of the 'C' setjmp/longjmp calls, IFP
+handles this event as if the interpreter's glk_main() had simply returned.
+
+IFP also redirects any calls the interpreter might make to exit(), though of
+course, none should if they adhere to Glk API guidelines.  A call to exit() is
+treated as a call to glk_exit().  If an interpreter really wants to stop the
+process, it can call _exit().
+
+
+Because interpreters are expecting glk_exit() to terminate the process, most
+will happily call it while still holding system resources.  Chief among these
+is malloc()'ed memory.  A "pluginified" interpreter will often not free its
+heap memory before exiting.
+
+To deal with this, IFP intercepts all calls that the interpreter code makes to
+malloc() and its close relatives.  It does this by defining the functions
+malloc(), free(), and so on, in libifppi.  Because these symbols are "weak" in
+libc, they can be overridden.
+
+The IFP library passes each intercepted malloc() and similar call from an
+interpreter back to the main application.  This calls the real malloc() or
+appropriate function, then updates an internal table with information about
+what memory addresses the interpreter has malloc()'ed but not yet freed.  When
+the interpreter finishes, IFP scans this table, and automatically free()'s any
+memory that the interpreter left unfreed when it called glk_exit() (or just
+returned from glk_main()).
+
+IFP also uses this same technique to try to reduce file descriptor leaks that
+might also be caused by an interpreter opening but not closing a file.  When it
+comes to cleaning up Glk, IFP has a much easier time.  Glk is very helpful in
+that it offers ways to query and destroy most of the resources it has
+accumulated while running a game.
+
+At present, the simple IFP interpreter, ifpe, does not try to repeat games or
+start new games when an interpreter plugin completes running.  Only legion
+and gamebox currently use this feature.
+
+ 
+Because IFP contains both a client-side library that knows how to find and load
+plugins, and a plugin-side library that knows how to be loaded by the client,
+these can be combined into one single plugin.
+
+A chaining plugin is a plugin that takes on a portion of the game interpreting
+task, then passes off the real work to some other plugin.  There are two in IFP
+at the moment
+
+  unarchive - handles cpio, tar, zip, and ar archives
+  uncompress - handles gzipped, bzipped, compressed, and packed data
+
+These do not interpret the game.  What they do is to uncompress or unarchive
+the file that they are handed into files in /tmp, then use their built-in IFP
+loader functions to search for another plugin that is able to handle the data
+they just uncompressed, acting like an middleman in the whole affair.  In this
+way, a file such as weather.z5.gz, or an Alan file in its "native" format of
+bugged.zip can be handled directly by IFP.
+
+It is also possible for a chaining plugin to load and run another copy of
+itself.  This means that uncompression is not limited to one level, and a file
+such as weather.z5.gz.gz.gz is seamlessly usable.  In order to support such
+chaining plugins, IFP may have to take a complete copy of a plugin DSO on disk
+and load this.
+
+
+IFP contains small, built-in HTTP and FTP clients.  On being handed a URL that
+it needs to use, IFP uses the relevant client to download the data from the URL
+and store it on a disk temporary file.  That file can then be passed to the
+client-side loader functions, to find the right plugin for the downloaded data,
+and the whole business of loading and running the right plugin continues as
+normal from there.
+
+Having URLs included in IFP allows the main game program to run games from the
+IF Archive directly, for example:
+
+    ifpe http://www.ifarchive.org/if-archive/games/zcode/curses.z5
+
+URLs go to some extremes to try to ensure that temporary files are deleted from
+/tmp when the interpreter program exits.
+
+URLs can be either synchronous or asynchronous.  Asynchronous  URLs allow the
+URL resolve function to return as soon as it has negotiated and begun to
+download from the server.  A program using this form of download needs to poll
+the URL to see if the download has completed, and will not be able to access
+URL data until it has.  It can, however, go off and do other things, and check
+back on the progress of the download later.
+ 
+
+The two most immediately useful IFP manager functions are
+
+  ifp_manager_locate_plugin (const char *filename)
+  ifp_manager_run_plugin (ifp_pluginref_t plugin)
+
+Together, they offer enough functionality to build a straightforward IF
+interpreter using plugins.  ifp_manager_locate_plugin() is responsible for
+finding, loading, and returning a plugin capable of handling a particular input
+file.  ifp_manager_run_plugin() then runs this plugin.  There is also a form of
+ifp_manager_locate_plugin() that takes a URL for an IF game as its argument.
+
+
+The IFP loader manipulates a list of loaded plugins.  The functions
+
+  ifp_loader_search_plugins_dir (const char *dir_path)
+  ifp_loader_search_plugins_path (const char *load_path)
+
+will search a directory and a path respectively, and load each IFP plugin they
+can find.  If a particular plugin is already loaded, the loader will skip it on
+a search, ensuring that only one copy of each available plugin is loaded.  The
+IFP manager uses these functions to refresh the list of loaded plugins each
+time its ifp_manager_locate_plugin() function is called.
+
+The loader functions
+
+  ifp_loader_load_plugin (const char *filename)
+  ifp_loader_forget_plugin (ifp_pluginref_t plugin)
+
+can be used to load an individual file as a plugin, and to remove a particular
+plugin from the loader, then delete it completely, freeing the memory it is
+using.  To iterate round all the plugins in the loader, use
+
+  ifp_loader_iterate_plugins (ifp_pluginref_t current)
+
+
+A convenient way to resolve URLs is to use one of the following functions:
+
+  ifp_url_new_resolve (const char *urlpath)
+  ifp_url_new_resolve_async (const char *urlpath)
+
+These calls create a new URL object, with the data downloaded into a temporary
+file if the URL is not a local file.  "file:", "http:", and "ftp:" URLs are all
+acceptable, or you can also simply pass in a file path, for example
+/home/myfiles/somegame.z5.
+
+If you use asynchronous URLs, the call will return as soon as the download of
+data (if remote) has started.  In this case, the program can undertake other
+tasks, and you need to check periodically to see if the download has completed.
+To do this, use the functions
+
+  ifp_url_poll_status_async (ifp_urlref_t url)
+  ifp_url_poll_progress_async (ifp_urlref_t url)
+
+If the URL has completed, ifp_url_poll_status() will return TRUE.  Otherwise,
+it will return FALSE, and you can then use
+
+  ifp_url_get_status_async (ifp_urlref_t url)
+
+to get the errno value indicating why the URL failed.  ifp_url_poll_progress()
+returns the number of bytes downloaded so far for a remote URL; this is useful
+in printing download progress status messages.  To pause while waiting for the
+next block of download data for a URL, either delay with Glk timers or call
+
+  ifp_url_pause_async (ifp_urlref_t url)
+
+This returns on the next block of downloaded data, or after a short pause.  You
+can set the pause length explicitly with the environment variable
+IFP_URL_TIMEOUT, giving the timeout in microseconds.  Once the URL has finished
+downloading, it can be used in calls to other functions.  The functions
+
+  ifp_url_get_url_path (ifp_urlref_t url)
+  ifp_url_get_data_file (ifp_urlref_t url)
+
+return the path used to resolve a URL, and the file containing URL data,
+respectively.  To free memory in use by a URL, call
+
+  ifp_url_forget (ifp_urlref_t url)
+
+This will not, however, delete any temporary file associated with a remote URL.
+These files are kept in a cache in case they are needed again.
+ 
+
+Whenever IFP needs to download URL data into a temporary file, it keeps a
+record in an internal cache of the URL, and the temporary file containing the
+data.  If another request is made for the same data, the same temporary file
+path is used, to save downloading the URL data multiple times.  This makes it
+convenient to play a game more than once using a remote URL.
+
+At present, this is a temporary cache; it exists only while the main IFP
+application is running.  On program exit, all cached URL temporary files are
+deleted.  The current default cache size is 10Mb; you can use the environment
+variable IFP_CACHE_LIMIT to set a cache size limit in bytes.
+
+
+When the IFP manager begins to use an IF plugin, it must construct a set of
+startup options to pass to the interpreter's glkunix_startup_code() function.
+It does this by consulting a list that IFP keeps of the preferences to be used
+for particular plugins.
+
+The two main functions to add and delete preferences for interpreter plugins
+are
+
+  ifp_pref_register (const char *engine_name,
+                     const char *engine_version, const char *preference)
+  ifp_pref_unregister (const char *engine_name,
+                       const char *engine_version, const char *preference)
+
+These functions tell the IFP library how to construct a set of startup
+arguments when running a plugin.  Preferences are added by ifp_pref_register().
+Each call to this function needs to supply the name and version of the engine;
+IFP will match these to a plugin before starting to run it.  The preference is
+simply a text string to be added to the glkunix_startup_code arguments.
+
+Preferences appear in the arguments in the same order as they are entered into
+the IFP library list.  To register preferences for all versions of a plugin,
+the engine_version may be NULL.  To enter global preferences, both engine_name
+and engine_version may be NULL.
+
+ifp_pref_unregister() removes a preference from the list.  Engine_name,
+engine_version, or both may be NULL, indicating wildcard values.  Preference
+may also be NULL.  A call with three NULL arguments will clear the entire list.
+
+Initially, the preferences list is empty.  Here is how IFP can be told to add
+the "-ignore" argument each time it needs to start an instance of the Nitfol
+interpreter plugin:
+ 
+  ifp_pref_register ("nitfol", NULL, "-ignore");
+ 
+IFP automatically passes preferences lists through chaining plugins, so a set
+of preferences written to the main program are used globally.
+
+To find out which preferences a plugin understands, call the function
+
+  ifp_pref_list_arguments (const char *engine_name,
+                           const char *engine_version)
+
+The function returns a glkunix_argumentlist_t result.  To accomplish this, the
+function will load all available plugins into the loader, so if you're not
+expecting this, you might want to follow up with a call to the function
+ifp_loader_forget_all_plugins() when you have finished using the result of the
+ifp_pref_list_arguments() call.
+ 
+
+In addition, there are many functions for returning information about a
+particular plugin, such as its name, version, author, home page URL, and so on. 
+Some of these, such as ifp_plugin_engine_name() and ifp_plugin_engine_version()
+may be of interest; others may be useful only in the implementation of IFP
+itself.  See the libifp manual page for more details.
+
+ 
+The default plugin search path, if no value is set in the environment variable
+IF_PLUGIN_PATH, is "/usr/local/lib/ifp:/usr/lib/ifp", and the default
+IFP_GLK_LIBRARIES if not set is "xglk", "glkterm", or "cheapglk" depending on
+$DISPLAY and $TERM.  The IFP libraries complain if no value is set for
+IF_PLUGIN_PATH or IFP_GLK_LIBRARIES.
+
+ 
+The macro definition of strdup() in string2.h converts the function call into
+a call to __strdup().  IFP can only intercept calls to strdup(), since this
+is defined as a weak symbol in glibc.  It cannot catch or redefine __strdup(),
+however, since __strdup() is not a weak glibc symbol.
+
+The result of this is that if an interpreter uses strdup() and is compiled with
+optimizations, IFP does not get to see the __strdup() call.  However, the
+subsequent free() of the address returned by string duplication is caught by
+IFP.  As far as IFP is concerned, this looks like an attempt to free memory
+that has not been allocated from the heap.
+
+To avoid this, if an interpreter uses strdup(), either compile it without
+optimizations, or disable the optimizations in string2.h by passing the option
+-D__NO_STRING_INLINES to the gcc compiler.

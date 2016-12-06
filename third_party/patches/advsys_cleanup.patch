@@ -1,0 +1,49 @@
+diff -Naur advsys/advjunk.c advsys_new/advjunk.c
+--- advsys/advjunk.c	Sun Dec 14 21:58:08 2003
++++ advsys_new/advjunk.c	Sun Dec 14 22:15:11 2003
+@@ -54,7 +54,13 @@
+ 	strid_t fd;
+ 
+ 	fdref = glk_fileref_create_by_prompt(fileusage_SavedGame, filemode_Write, 0);
++	if (fdref == NULL)
++		return (0);
+ 	fd = glk_stream_open_file(fdref, filemode_Write, 0);
++	if (fd == NULL) {
++		glk_fileref_destroy(fdref);
++		return (0);
++	}
+ 
+     glk_put_buffer_stream(fd,hdr,hlen);
+ 	
+@@ -78,8 +84,17 @@
+         error("save file header buffer too small");
+ 
+ 	fdref = glk_fileref_create_by_prompt(fileusage_SavedGame, filemode_Read, 0);
++	if (fdref == NULL)
++		return (0);
++	if (!glk_fileref_does_file_exist(fdref)) {
++		glk_fileref_destroy(fdref);
++		return (0);
++	}
+ 	fd = glk_stream_open_file(fdref, filemode_Read, 0);
+-
++	if (fd == NULL) {
++		glk_fileref_destroy(fdref);
++		return (0);
++	}
+ 
+     /* read the header */
+     if (glk_get_buffer_stream(fd,hbuf,hlen) != hlen) {
+diff -Naur advsys/advtrm.c advsys_new/advtrm.c
+--- advsys/advtrm.c	Sun Dec 14 21:58:08 2003
++++ advsys_new/advtrm.c	Sun Dec 14 21:56:21 2003
+@@ -91,8 +91,8 @@
+ {
+ 	event_t event;
+ 
++	glk_request_line_event(window, line, LINEMAX, 0);
+ 	do {
+-		glk_request_line_event(window, line, LINEMAX, 0);
+ 		glk_select(&event);
+ 	
+ 		switch (event.type) {

@@ -1,0 +1,173 @@
+
+Gamebox is a game catalog plugin for IFP.  It accepts IFMES game catalogs
+in either RDF+XML or INI format, or iFiction XML catalogs, and offers the games
+described in them in menu form.  IFP is a plugin scheme for Interactive Fiction
+virtual machines.
+
+
+Gamebox resides in the file
+
+    gamebox-0.0.4.so
+
+To use Gamebox, put the file somewhere in your IF_PLUGIN_PATH, or set
+IF_PLUGIN_PATH so that it picks up the file.  Gamebox will automatically
+accept, on behalf of IFP, RDF+XML files that contain IFMES catalogs, XML
+files that contain iFiction catalogs, and INI files that begin with the special
+";GAMEBOX_0.4" identifier line.
+
+
+There are example IFMES and iFiction catalogs for all of IFP's standard example
+games, in the files
+
+    catalog.ifmes
+    catalog.ifiction
+    catalog.ini
+
+To run Gamebox with IFP's example games, then, use
+
+    ifpe catalog.ifmes, or
+    ifpe catalog.ifiction, or
+    ifpe catalog.ini
+
+Not all metadata in these catalogs is accurate.  See commentary in the files
+for more.  Although no examples use http: URLs, it is just as easy to use
+those in catalogs as local files.  For example, in IFMES RDF+XML:
+
+    <?xml version="1.0"?>
+    <RDF:RDF xmlns:BAF="http://wurb.com/if/"
+             xmlns:IF="http://purl.org/int-fiction/metadata/1.1/"
+             xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <BAF:game
+        RDF:about="http://www.ifarchive.org/if-archive/games/zcode/curses.z5"
+        IF:title="Curses"
+        IF:desc="It's become a matter of pride now not to give up. That tourist
+    map of Paris must be up here somewhere in all this clutter, even if it
+    has been five years since your last trip. And it's your own fault. It
+    looks as if your great-grandfather was the last person to tidy up these
+    lofts..."
+        IF:author="Graham Nelson"
+        IF:releaseDate="1995-10-24"
+        IF:genre="Attic crawl"
+        IF:version="16">
+      </BAF:game>
+    </RDF:RDF>
+
+or, using the much simpler IFMES INI format:
+
+    ;GAMEBOX_0.4
+    [curses.z5]
+    about=http://www.ifarchive.org/if-archive/games/zcode/curses.z5
+    title=Curses
+    desc=It's become a matter of pride now not to give up. That tourist
+    map of Paris must be up here somewhere in all this clutter, even if it
+    has been five years since your last trip. And it's your own fault. It
+    looks as if your great-grandfather was the last person to tidy up these
+    lofts...
+    author=Graham Nelson
+    releaseDate=1995-10-24
+    genre=Attic crawl
+    version=16
+
+or, finally, in ("sparse") iFiction format:
+
+    <?xml version="1.0"?>
+    <ifindex version="1.0"
+             xmlns="http://babel.ifarchive.org/protocol/iFiction/">
+      <story>
+        <bibliographic>
+          <title>Curses</title>
+          <description>It's become a matter of pride now not to give up. That
+          tourist map of Paris must be up here somewhere in all this clutter,
+          even if it has been five years since your last trip. And it's your
+          own fault. It looks as if your great-grandfather was the last person
+          to tidy up these lofts...</description>
+        <author>Graham Nelson</author>
+        <firstpublished>1995-10-24</firstpublished>
+        <genre>Attic crawl</genre>
+        <zcode>
+          <release>16</release>
+        </zcode>
+        <annotation>
+        <gamebox>
+        <about>http://www.ifarchive.org/if-archive/games/zcode/curses.z5</about>
+        </gamebox>
+        </annotation>
+      </BAF:game>
+    </RDF:RDF>
+
+Should the IF Archive ever publish IFMES or iFiction catalogs, Gamebox should
+be able to work inside IFP with something like (hypothetically):
+
+    ifpe http://www.ifarchive.org/if-archive/games/catalog.xml
+
+
+The full source code for Gamebox is included in this package.  To build
+Gamebox from sources, type
+
+    make all
+
+on a system that has IFP and the IFP libraries installed on it.
+
+
+At the time of writing, the IFMES standard is incomplete and fluid.  It's
+very likely, then, that Gamebox does not fully or completely support all
+IFMES.  In particular, Gamebox only knows about the current version of
+IFMES, 1.1 draft "2 September 2005".
+
+Gamebox uses IFMES RDF+XML data files as one of its catalog formats, and is
+perhaps the first released application to try to use this format.  This
+release of Gamebox uses a 'cut price' RDF parser, one that may not parse
+all IFMES RDF+XML files correctly.  This RDF parser appears to work with all
+known IFMES RDF+XML files currently available, but that doesn't mean it will
+work with all, or even any, future files.  See the supplied catalog.xml file
+for a little more on this topic.
+
+RDF+XML files are hard to create by hand, so as an alternative data file
+format, Gamebox will accept INI files.  Its INI file parser is reasonably
+complete, but may not fully accept everything that a Windows INI file parser
+might be happy with.  See the supplied catalog.ini file for more.
+
+For RDF+XML data files, Gamebox will try to group games into categories
+according to the RDF Seq or Bag specifications it finds.  There is currently
+no way in INI files to express game categories, so this feature cannot be
+used with INI data files.
+
+
+The iFiction standard, as of 13th April 2006, is similarly incomplete and
+fluid.  Gamebox's use of iFiction groups is limited, because the specification
+itself does not offer anything other than the most basic group identification.
+
+iFiction does not record a measure of a game's length, and holds publisher
+information unevenly.  Game release information is held in system-specific
+rather than common tags, so may not be available for all systems.  A game's
+first published date may not necessarily be the date on which the build being
+described was made; currently, iFiction records the release date explicitly
+only for TADS games.
+
+iFiction specifies downloads from "http://babel.ifarchive.org/download/"
+followed by the game's IFID.  If you need to change this base URL you can do
+so by setting the value of the GAMEBOX_BABEL_URL environment variable.
+
+
+Gamebox works moderately well with Xglk, avoiding overrunning Xglk's display
+buffer by paging large game lists (there are Xglk options to extend the buffer
+size).  It also works with Glkterm and Cheapglk, though without hyperlinks it
+has to drop down to numbered menu items, making it inconvenient to use.
+
+It works with Gargoyle, though unfortunately the current release of Gargoyle
+does not offer hyperlinks, leaving only numbered menus.  It also works with
+Gtkglk; this Glk library does offer hyperlinks, but to activate them you
+need to double-click, which sometimes leads to additional and unwanted text
+selections.
+
+
+Gamebox is beta software.  See the TODO file for a partial list of Gamebox's
+shortcomings.
+
+You can use catalog.py to create skeleton minimal IFMES and iFiction catalogs
+for system directories containing IF game files.  Use 'catalog.py -h' for a
+usage message, describing how to do this.
+
+
+For more on Glk libraries, see http://eblong.com/zarf/glk.  For details on
+IFP, visit http://www.ifarchive.org/if-archive/programming/ifp.

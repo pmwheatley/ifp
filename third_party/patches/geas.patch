@@ -1,0 +1,36 @@
+diff -Naur geas/glk-ui/module.mk geas_new/glk-ui/module.mk
+--- geas/glk-ui/module.mk	2006-12-04 11:05:59.000000000 -0800
++++ geas_new/glk-ui/module.mk	2007-08-21 22:56:06.000000000 -0700
+@@ -1,6 +1,6 @@
+-GLKDIR=/home/tilford/src/dl/glkterm/
++GLKDIR=../../../src/ifp
+ #GLKDIR=/home/tilford/src/dl/gargoyle/garglk/
+-GLKLIB=-lglkterm -lncurses -L$(GLKDIR)
++GLKLIB=-lifppi -L$(GLKDIR)
+ #GLKLIB=-lglkterm -lncurses -L/home/tilford/src/dl/glkterm
+ 
+ #GLK_OBJ=$(patsubst %.cc,%.o, $(wildcard *.cc)) $(patsubst %.c,%.o, $(wildcard $(GLKDIR)/*.c))
+diff -Naur geas/Makefile geas_new/Makefile
+--- geas/Makefile	2006-12-11 09:41:18.000000000 -0800
++++ geas_new/Makefile	2007-08-21 22:56:58.000000000 -0700
+@@ -32,6 +32,11 @@
+ OBJ := $(patsubst %.cc,%.o, $(filter %.cc,$(SRC))) $(patsubst %.c,%.o, $(filter %.cc,$(SRC)))
+ 
+ 
++PLUGIN_OBJS = ../geas_plugin.o
++geas-0.4.so: core_obj glk_obj $(CORE_OBJ) $(GLK_OBJ) $(PLUGIN_OBJS)
++	$(CXX) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(CORE_OBJ) $(GLK_OBJ) $(PLUGIN_OBJS) \
++		-L../../src/ifp -lifppi
+ 
+ gtk-geas: core_obj gtk_obj $(CORE_OBJ) $(GTK_OBJ)
+ 	@#@echo "CORE_SRC == $(CORE_SRC), CORE_OBJ == $(CORE_OBJ), GTK_OBJ == $(GTK_OBJ)"
+@@ -68,7 +73,7 @@
+ 	$(MAKE) -C wx-ui
+ 
+ clean:
+-	-rm gtk-geas glk-geas
++	-rm -f gtk-geas glk-geas geas-0.4.so
+ 	-$(MAKE) clean -C geas-core
+ 	-$(MAKE) clean -C gtk-ui
+ 	-$(MAKE) clean -C glk-ui

@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<!--
+    This catalog conforms to IFMES version 1.1 working draft "2 September
+    2005".
+    -->
+
+<RDF:RDF xmlns:IF="http://purl.org/int-fiction/metadata/1.1/"
+         xmlns:BAF="http://wurb.com/if/"
+         xmlns:DC="http://purl.org/dc/elements/1.1/"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<!--
+    Template entry.  Only RDF:about is mandatory for Gamebox.  'IFM:story'
+    may be used in place of 'BAF:game'.  If you need multiple values for an
+    entry (author, say), use multiple IF: elements instead of attributes.
+
+    <BAF:game RDF:about=""              *mandatory*
+                     IF:title=""        recommended
+                     IF:byline=""
+                     IF:author=""
+                     IF:publisher=""
+                     IF:desc=""
+                     IF:genre=""
+                     IF:version=""
+                     IF:releaseDate=""  in format "YYYY[-MM[-DD]]"
+                     IF:length="">      in format "h:mm"
+    </BAF:game>
+-->
+
+<!--
+    Accuracy note: for now, some of the game property values below are either
+    uncertain or complete guesswork.  Dates may be wrong, genres are almost
+    certainly not taken from an accurate vocabulary, and lengths are usually
+    gut feeling or guesswork.
+
+    For now, that's okay, as this is a demonstration file only.  At some
+    point, however, these should be updated.
+-->
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/advent.blb"
+                   IF:title="Adventure"
+                   IF:desc="The Interactive Original.  You are standing at the end of a road before a small brick building. Around you is a forest. A small stream flows out of the building and down a gully."
+                   IF:genre="Cave crawl"
+                   IF:version="5"
+                   IF:releaseDate="1976"
+                   IF:length="4:00">
+                <IF:author>Will Crowther</IF:author>
+                <IF:author>Don Woods</IF:author>
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/bugged.zip"
+                   IF:title="Bugged"
+                   IF:author="Anssi Raisanen"
+                   IF:byline="written by Anssi Raisanen"
+                   IF:desc="As a fan of interactive fiction, you promised to your cousin, who also has taken an interest in text adventures, to try out his latest creation, even if his earlier attempts, honestly said, have left rather a lot to wish for."
+                   IF:genre="Surreal"
+                   IF:version="1.1"
+                   IF:length="1:00">
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/EnterTheDark.a3c"
+                   IF:title="Enter the Dark"
+                   IF:author="Peter R Shushmaruk"
+                   IF:byline="written by Peter R Shushmaruk"
+                   IF:desc="Darkness, where evil plays with the innocents of its victims. Blood pumping anxiety, of the horror sounding in the invisible distance. Shadows crossing the walls out of the corner of your eye. In the loneliness and silence, you think you are safe. Yet the creatures that manifest themselves behind you, creeping slowly to strike without warning. Its only you and the darkness...Or is it?"
+                   IF:genre="Horror"
+                   IF:length="1:00">
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/hamper.taf"
+                   IF:title="To Hell in a Hamper"
+                   IF:author="J.J. Guest"
+                   IF:byline="by J.J. Guest"
+                   IF:desc="From the log of Professor Pettibone, eminent Victorian Balloonist: Twenty-fourth of February, 1876. The English Channel. Our Journey begins! A large crowd gathered this morning in Berkeley Square as we made our final preparations for what is to be one of the most daring expeditions ever undertaken; a journey around the world by balloon."
+                   IF:releaseDate="2003-08-02 "
+                   IF:length="2:30">
+                <IF:genre>Historical</IF:genre>
+                <IF:genre>Humor</IF:genre>
+                <IF:genre>Travel</IF:genre>
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/busted.dat"
+                   IF:title="Busted"
+                   IF:publisher="Scumbag Software"
+                   IF:desc="Life at Hard Knocks University isn't all wine and roses, but you've become accustomed to the Kafka-esque administration, the fascistic locals and the rest of the entertainment that comes with studying at a large state-run university in a small agricultural community. Things are fine until one day when you come home to find a message on your answering machine..."
+                   IF:genre="Collegiate"
+                   IF:version="1"
+                   IF:releaseDate="1993-07-06"
+                   IF:length="2:30">
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/cosmos.zip"
+                   IF:title="CosmoServe"
+                   IF:author="Judith Pintar"
+                   IF:desc="You are in your office, which used to be a living room until the couch was taken over by a pile of papers and books. The spot in front of the computer is now the only unoccupied seat in the room. Lucky thing you don't do much entertaining."
+                   IF:releaseDate="1991"
+                   IF:length="3:30">
+                <IF:genre>Science Fiction</IF:genre>
+                <IF:genre>Satire</IF:genre>
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/spur.hex"
+                   IF:title="Spur"
+                   IF:author="Kent Tessman"
+                   IF:desc="In retrospect, maybe all that cheap whiskey last night in Grady's wasn't such a brilliant idea.  Not the way the evil, glowing orb of the morning sun is burning a hole through your squinting eyes and right into the back of your head.  And especially since there's a guy with a six-shooter on his belt, ready to draw, standing thirty feet away and facing you."
+                   IF:genre="Western"
+                   IF:version="9"
+                   IF:releaseDate="1999-12-04"
+                   IF:length="3:00">
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/time.sna"
+                   IF:title="Lords of Time"
+                   IF:publisher="Level 9 Computing"
+                   IF:desc="You are sitting in the comfort of your own home, debugging your latest program before submitting it for us to market. Suddenly there is a blinding flash..."
+                   IF:genre="Time Travel"
+                   IF:releaseDate="1983"
+                   IF:length="2:00">
+                <IF:author>Ian Buxton</IF:author>
+                <IF:author>Sue Gazzard</IF:author>
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/toonesia.gam"
+                   IF:title="Toonesia"
+                   IF:author="Jacob Weinstein"
+                   IF:desc="Oooh, that rascally rabbit!  You were out hunting him when he somehow got the jump on you, blindfolded you, and dumped you into a cell.  Well, you'll show him.  He'll be hasenpfefer by dinner tonight, or your name isn't Elmo Fuld."
+                   IF:version="1.1"
+                   IF:releaseDate="1995"
+                   IF:length="2:00">
+                <IF:genre>Cartoon</IF:genre>
+                <IF:genre>Screen</IF:genre>
+                <IF:genre>Children's</IF:genre>
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/ericgift.t3"
+                   IF:title="Eric's Gift"
+                   IF:author="Joao Mendes"
+                   IF:desc="Three-thirty in the morning. Turill Plaza is always empty at this hour. For about four years, you have been coming here, hoping... no, knowing you would find her.  And tonight, she may finally be here."
+                   IF:releaseDate="2002"
+                   IF:length="1:00">
+                <IF:genre>Science Fiction</IF:genre>
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/weather.z5"
+                   IF:title="A Change in the Weather"
+                   IF:author="Andrew Plotkin"
+                   IF:desc="The picnic is going full blast, which is exactly why you've wandered away from it. It's not that you don't like your new companions; it's just that after weeks of spending each day around them, a noisy weekend cook-out isn't the way to relax. Some exploration -- on your own -- is an appealing thought."
+                   IF:genre="Fantasy"
+                   IF:releaseDate="1996-06-13"
+                   IF:length="1:45">
+  </BAF:game>
+
+  <BAF:game RDF:about="file:///usr/lib/games/ifp/elvis.cas"
+                   IF:title="I Rescued Elvis from Communist Alien Jerks"
+                   IF:author="Robert Sedler"
+                   IF:desc="You are standing in a large open field just outside your home town. It is a clear summer night with millions of stars all around you. You notice that one star seems to be moving. You can't be sure, but it almost seems as if it is getting closer."
+                   IF:releaseDate="2003"
+                   IF:length="1:00">
+                <IF:genre>Science Fiction</IF:genre>
+                <IF:genre>Humor</IF:genre>
+  </BAF:game>
+
+<!--
+    Formatting note: Gamebox does not need an all-encompassing RDF sequence.
+    It automatically gathers together all items not enclosed in a sequence
+    and creates a top-level menu for them if required.  This sequence is
+    provided only to name the top level category, and as an example of how
+    to group games into separated categories.
+-->
+
+  <RDF:Seq RDF:about="urn:x-gamebox:cat#ifp">
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/advent.blb"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/bugged.zip"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/EnterTheDark.a3c"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/hamper.taf"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/busted.dat"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/cosmos.zip"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/spur.hex"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/time.sna"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/toonesia.gam"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/ericgift.t3"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/weather.z5"/>
+        <RDF:li RDF:resource="file:///usr/lib/games/ifp/elvis.cas"/>
+  </RDF:Seq>
+  <RDF:Description RDF:about="urn:x-gamebox:cat#ifp"
+        DC:title="Gamebox Standard Games"
+        DC:description="This category lists all the games contained in the standard IFP installable package."/>
+
+</RDF:RDF>

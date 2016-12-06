@@ -1,0 +1,22 @@
+# Quest games that are compiled begin "QCFG002".  Those that aren't compiled
+# are a little hard to recognize; a "define game" somewhere in the first
+# few hundred characters seems about the best we can do.
+
+engine_type="Quest"
+engine_name="Geas"
+engine_version="0.4"
+
+acceptor_offset=0
+acceptor_length=512
+acceptor_pattern="^(51 43 47 46 30 30 32 .*|.* 64 65 66 69 6e 65 20 67 61 6d 65 20 .*)$"
+
+author_name="Mark J. Tilford"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"Geas is an Open Source interpreter for the Quest format of computer
+ text adventures.  Geas was created by Mark Tilford.  The Glk interface
+ was created by David R. Jones.  Alex Warren wrote Quest.\n"
+engine_copyright="Copyright (C) 2006 by Mark J. Tilford.\n"

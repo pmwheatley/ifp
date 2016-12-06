@@ -1,0 +1,23 @@
+diff -Naur nitfol/nitfol-0.5/automap.c nitfol_new/nitfol-0.5/automap.c
+--- nitfol/nitfol-0.5/automap.c	Tue Oct 19 17:09:46 1999
++++ nitfol_new/nitfol-0.5/automap.c	Tue Jun 10 20:59:16 2003
+@@ -1066,6 +1066,8 @@
+ 
+ #else
+ 
++char *roomsymbol = NULL;
++
+ BOOL automap_unexplore(void)
+ {
+   return FALSE;
+diff -Naur nitfol/nitfol-0.5/automap.h nitfol_new/nitfol-0.5/automap.h
+--- nitfol/nitfol-0.5/automap.h	Sun Oct 24 17:55:13 1999
++++ nitfol_new/nitfol-0.5/automap.h	Tue Jun 10 21:03:05 2003
+@@ -26,6 +26,7 @@
+ BOOL automap_unexplore (void);
+ 
+ #else
++extern char * roomsymbol;
+ BOOL automap_unexplore (void);
+ 
+ #endif

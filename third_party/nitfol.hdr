@@ -1,0 +1,37 @@
+# The Z-machine game file format, as it stands, doesn't really lend itself to
+# recognition - see the file /usr/share/misc/magic, or equivalent, for
+# evidence of this.  However, for us, what matters most is differentiating
+# Z-machine games from other IF games, not from all other files.  Here we're
+# looking for the first byte be 0x01 to 0x08 (the version number), and the
+# second be 0x00-0x0F (Z-machine uses only low nibble "flags", so far, anyway).
+# Moreover, we need to make a small gap in this recognition space for Alan,
+# which uses the first two bytes as its game version - currently 2.7 or 2.8.
+
+# It turn out that we can just about get away with this, since the only games
+# known to use Z-machine version 2 are older Zork I and Zork II, and for these
+# particular two games, "flags" is known to be 0x00.  So until, Alan goes to
+# version 3, we're okay.
+
+engine_type="Z-machine"
+engine_name="Nitfol"
+engine_version="0.5"
+
+blorb_pattern="^5a 43 4f 44$"
+
+acceptor_offset=0
+acceptor_length=2
+acceptor_pattern="^(0[3-8] 0[0-9abcdef])|(0[1-2] 00)$"
+
+author_name="Evin Robertson"
+author_email="nitfol@my-deja.com"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"Nitfol is a portable interpreter for Z-machine code, the game format
+ used by Infocom and more recently, Inform
+ (http://www.gnelson.demon.co.uk/inform.html).  Nitfol handles versions one
+ through eight of the format, and attempts to comply with version 1.0 of
+ the Z-machine specification.\n"
+engine_copyright="Copyright (C) by Evin Robertson.\n"

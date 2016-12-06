@@ -1,0 +1,22 @@
+# TADS3 game files begin with "T3-image".  TADS2 game files begin with
+# "TADS2 bin".
+
+engine_type="TADS"
+engine_name="Tadsr"
+engine_version="3.0.12"
+
+acceptor_offset=0
+acceptor_length=9
+acceptor_pattern="^(54 33 2d 69 6d 61 67 65 ..|54 41 44 53 32 20 62 69 6e)$"
+
+author_name="Michael J. Roberts"
+author_email="mjr_@hotmail.com"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"This is a Unix version of the TADS 3.0.12 source distribution.  This
+ interpreter can also run TADS version 2 games, using the 2.5.10 release of
+ TADS 2.\n"
+engine_copyright="Copyright 1998, 2003 by Michael J. Roberts.\n"

@@ -1,0 +1,41 @@
+
+IFP is for Linux only, and requires a C99 compiler with GNU gcc extensions.  It
+may be 64-bit clean, but is not thread-safe.
+
+There are several source distribution files.  Core IFP is in ifp-1.4-core.tgz,
+while ifp-1.4-resources.tgz contains all of the additional third-party code
+needed to build Glk and interpreter plugins, and some sample games.  For full
+IFP builds, unpack both into the same directory.
+
+Alternatively, obtain a copy of ifp-1.4.tgz, which contains both core IFP and
+third-party code combined.
+
+To build, run 'configure' and then 'make'.  IFP offers the usual options to
+'configure', and the expected 'make' targets.
+
+Run games with the new IFP build using commands such as
+
+    cd src/ifp
+    IF_PLUGIN_PATH=".:../../third_party/plugins" ifpe -glk xglk \
+    ../../third_party/distributed/weather.z5
+
+This sets a value for the variable IF_PLUGIN_PATH, used by the IFP libraries
+when deciding where to look for plugins, requests the xglk display library,
+then runs a sample game from the IFP resources.
+
+Some other things to try are
+
+    cd src/ifp
+    IF_PLUGIN_PATH=".:../../third_party/plugins" ifpe -glk cheapglk \
+    ../../third_party/derivatives/bugged.zip
+
+    cd src/ifp
+    IF_PLUGIN_PATH=".:../../third_party/plugins" legion -glk glkterm \
+    http://www.ifarchive.org/if-archive/games/zcode/curses.z5
+
+Once installed, you can set permanent values for IF_PLUGIN_PATH and for
+IFP_GLK_LIBRARIES, or configure IFP using your .ifprc file.
+
+The IFP_TRACE environment variable turns on debug output for IFP.  Set it to
+'all' to view all trace information, or to a space-separated list of modules
+to select traces from individual source modules.

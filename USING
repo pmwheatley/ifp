@@ -1,0 +1,115 @@
+
+The plugin-side part of IFP means converting an existing interpreter into a
+plugin.  This requires two steps -- defining a small 'C' module that contains
+information about the plugin, used by IFP when selecting plugins for a game,
+and altering the way the interpreter is linked so that it is built as a DSO.
+
+You can handle the first part, the information about the plugin, using the
+ifphdr tool supplied with IFP.  The ifphdr tool reads in a text file describing
+the plugin, and writes out a 'C' module that defines a data structure readable
+by IFP.  See the ifphdr(1) man page for information and an example.
+
+The second part, linking the interpreter as a DSO, requires that you link,
+along with your shared object, the object file created by compiling the 'C'
+module written by ifphdr, and libifppi.  For example
+
+  ifphdr myplugin.hdr myplugin_header.c
+  gcc -c myplugin_header.c
+  gcc -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic -o myplugin-0.0.0.so \
+    ...usual interpreter objects... -lifppi myplugin_header.o -lc
+
+Here, the -u ifpi_force_link option to ld forces the linker to including object
+code from libifppi that is not actually referenced from interpreter code; this
+includes the hooks used by IFP to attach the plugin.
+
+In particular, don't try to link a Glk library to the plugin.  IFP's libifppi
+is a "stub" Glk library, and resolves all Glk calls needed by the interpreter.
+(It's not actually a Glk library, though; it's a connection route to the Glk
+multiplexer in the IFP main program.)
+
+When writing the definitions for ifphdr, you need to specify the assorted
+acceptor strings as "asciified" binary.  For example, TADS files begin with
+"TADS2 bin".  Here, the offset is 0, and length is 9.  After "asciification"
+of the first nine bytes of a TADS data file, the acceptor pattern to set is
+"^54 41 44 53 32 20 62 69 6e$".
+
+IFP uses these strings to match data in game files to plugins.  Any data file
+that matches this is likely to be TADS data.  If your plugin can also handle
+Blorb-encapsulated data, you also need to add a Blorb acceptor pattern.
+
+When naming a plugin, note that IFP considers two plugins to be identical if
+their name and version strings match, and will not load duplicate plugins.
+
+
+On the other side of IFP, the client-side, you may want to build an IFP program
+that loads interpreter plugins.  The simplest IFP main program is
+
+  #include "ifp.h"
+  int main (int argc, char **argv) {
+    ifp_pluginref_t plugin = ifp_manager_locate_plugin (argv[1]);
+    if (plugin) {
+      ifp_manager_run_plugin (plugin);
+      ifp_loader_forget_plugin (plugin);
+    }
+    else
+      printf ("No plugin engine found for the data file\n");
+    return 0;
+  }
+
+This program finds a plugin that accepts the data file passed in, and if one
+is found, runs it.  IFP loads its plugins from the path in IF_PLUGIN_PATH, and
+searches the accepters of each to see if any can run the game.  IFP also loads
+its Glk plugin from the same path.  IFP Glk plugins are the same format as
+that used by Glkloader.
+
+When linking the main program for IFP, you need to supply a few unusal options
+to ensure that the program exports the Glk symbols needed by Glkloader plugins,
+but no others that might otherwise confuse interpreter plugins.
+
+Use the format
+
+  gcc -Wl,-E,-version-script,version_script -o main_program \
+    ...main objects... -ldl -lifp
+
+where the version_script file contains
+
+  { global: glk_main; glkunix_startup_code; glkunix_arguments; local: *; };
+
+As well as plain files, IFP can use its own URL objects to encapsulate the
+game files.  URLs that are references to remote data will be downloaded for
+you automatically by IFP before trying to locate a plugin and then run the
+game.  For example
+
+  #include "ifp.h"
+  int main (int argc, char **argv) {
+    ifp_urlref_t = ifp_url_new_resolve (argv[1]);
+    if (url) {
+        ifp_pluginref_t plugin = ifp_manager_locate_plugin_url (url);
+        if (plugin) {
+                ifp_manager_run_plugin (plugin);
+                ifp_loader_forget_plugin (plugin);
+        }
+        else
+          printf ("No plugin engine found for the data file\n");
+    }
+    else
+      printf ("Unable to find or resolve URL\n");
+  }
+ 
+You can load and print plugin details with the following example code
+
+  const char *path = ifp_manager_get_plugin_path ();
+  ifp_loader_search_plugins_path (path);
+
+  if (ifp_loader_count_plugins () > 0) {
+    ifp_pluginref_t plugin;
+
+    for (plugin = ifp_loader_iterate_plugins (NULL);
+         plugin; plugin = ifp_loader_iterate_plugins (plugin)) {
+      printf ("Found plugin name %s, version %s\n",
+              ifp_plugin_engine_name (plugin),
+              ifp_plugin_engine_version (plugin));
+    }
+  }
+  else
+    printf ("There are no plugins available\n");

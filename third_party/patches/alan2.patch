@@ -1,0 +1,40 @@
+diff -Naur alan2/interpreter/Makefile.glk alan2_new/interpreter/Makefile.glk
+--- alan2/interpreter/Makefile.glk	1999-11-14 13:19:07.000000000 -0800
++++ alan2_new/interpreter/Makefile.glk	2007-08-09 21:41:44.000000000 -0700
+@@ -2,10 +2,10 @@
+ 
+ # Glk definitions
+ 
+-GLKINCLUDEDIR = /usr/local/include/glk
+-GLKLIBDIR = /usr/local/lib/glk
+-GLKMAKEFILE = Make.xglk
+-GLKTARGET = xalan 
++GLKINCLUDEDIR = ../../../src/ifp
++GLKLIBDIR = ../../../src/ifp
++GLKMAKEFILE = Make.ifppi
++GLKTARGET = alan-2.8.6.so
+ GLK = -DGLK
+ 
+ #A tag describing the type of build 
+@@ -34,7 +34,7 @@
+ ARUNOPTS = $(COMPILER) $(VERBOSE) $(CRCLOG) $(REVERSED) $(PROGNAME) $(GLK)
+ 
+ CC = gcc
+-CFLAGS = -g -Wall -funsigned-char -I$(GLKINCLUDEDIR) $(ARUNOPTS)
++CFLAGS = -fPIC -O2 -Wall -funsigned-char -I$(GLKINCLUDEDIR) $(ARUNOPTS)
+ 
+ LINK = gcc
+ LDFLAGS = -g $(ARUNOPTS)
+@@ -66,8 +66,10 @@
+ #all: $(GLKTARGET) dumpacd
+ all: $(GLKTARGET)
+ 
+-$(GLKTARGET) : $(OBJECTS) $(GLKOBJS)
+-	$(LINK) -o $(GLKTARGET) $(OBJECTS) $(GLKOBJS) $(LDFLAGS) $(LIBS)
++PLUGIN_OBJS = ../../alan2_plugin.o
++$(GLKTARGET): $(OBJECTS) $(GLKOBJS) $(PLUGIN_OBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(OBJECTS) $(PLUGIN_OBJS) $(GLKOBJS) $(LIBS) -lc
+ 
+ dumpacd: dumpacd.o reverse.o spa.o
+ 	$(LINK) -o dumpacd $(LDFLAGS) dumpacd.o reverse.o spa.o

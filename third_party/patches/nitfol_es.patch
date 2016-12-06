@@ -1,0 +1,12 @@
+diff -Naur nitfol/nitfol-0.5/zscii.c nitfol_new/nitfol-0.5/zscii.c
+--- nitfol/nitfol-0.5/zscii.c	Sun Oct 17 16:14:45 1999
++++ nitfol_new/nitfol-0.5/zscii.c	Sun Feb 23 10:32:05 2003
+@@ -41,7 +41,7 @@
+ 
+ 
+ /* Returns character for given alphabet, letter pair */
+-static char alphabetsoup(unsigned spoon, unsigned char letter)
++static unsigned char alphabetsoup(unsigned spoon, unsigned char letter)
+ {
+   const char *alphabet;
+ 

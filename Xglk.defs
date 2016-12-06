@@ -1,0 +1,128 @@
+#ifdef GLK_DEFAULTS
+
+Glk.geometry:		500x600+64+10
+Glk.foreground:		black
+Glk.background:		gainsboro
+Glk.linkColor:		blue
+Glk.selectColor:	blue
+Glk.frameColor:		grey50
+Glk.frameUpColor:	grey75
+Glk.frameDownColor:	grey25
+
+Glk.ditherImages:	true
+Glk.colorLinks:		true
+Glk.underlineLinks:	true
+Glk.promptDefaults:	true
+
+Glk.historyLength:	20
+
+Glk.textBuffer.saveLength:	8000
+Glk.textBuffer.saveSlack:	1000
+
+Glk.textGrid.foreground:	black
+Glk.textBuffer.foreground:	black
+Glk.textGrid.background:	gainsboro
+Glk.textBuffer.background:	gainsboro
+
+Glk.Window.linkcolor:		blue
+Glk.Window.margin.x:		4
+Glk.Window.margin.y:		2
+
+Glk.Window.Style.size:		0
+Glk.Window.Style.weight:	0
+Glk.Window.Style.oblique:	0
+Glk.Window.Style.proportional:	1
+Glk.Window.Style.indent:	0
+Glk.Window.Style.parIndent:	0
+Glk.Window.Style.justify:	1
+Glk.Window.Style.foreground:	black
+Glk.Window.Style.background:	gainsboro
+Glk.Window.Style.linkColor:	blue
+
+Glk.Window.input.weight:		1
+Glk.Window.header.weight:		1
+Glk.Window.subheader.weight:		1
+
+Glk.Window.emphasized.oblique:		1
+
+Glk.Window.preformatted.proportional:	0
+Glk.textGrid.Style.proportional:	0
+
+Glk.textGrid.Style.Spec:	-adobe-courier-\
+%w{medium,bold}-%o{r,o}-normal--%s{8,10,12,14,18,24}-*-*-*-*-*-iso8859-1
+Glk.textBuffer.Style.Spec:	%p\
+{-adobe-courier-\
+%w{medium,bold}-%o{r,o}-normal--%s{8,10,12,14,18,24}-*-*-*-*-*-iso8859-1,\
+-adobe-times-\
+%w{medium,bold}-%o{r,i}-normal--%s{8,10,12,14,18,24,34}-*-*-*-*-*-iso8859-1}
+
+#else
+
+Glk.geometry:		600x700
+Glk.foreground:		black
+Glk.background:		WhiteSmoke
+Glk.linkColor:		blue
+Glk.selectColor:	SteelBlue
+Glk.frameColor:		grey50
+Glk.frameUpColor:	grey75
+Glk.frameDownColor:	grey25
+
+Glk.ditherImages:	true
+Glk.colorLinks:		true
+Glk.underlineLinks:	true
+Glk.promptDefaults:	true
+
+Glk.historyLength:	20
+
+Glk.textBuffer.saveLength:	16000
+Glk.textBuffer.saveSlack:	1000
+
+Glk.textGrid.foreground:	black
+Glk.textBuffer.foreground:	black
+Glk.textGrid.background:	WhiteSmoke
+Glk.textBuffer.background:	WhiteSmoke
+
+Glk.Window.linkcolor:		blue
+Glk.Window.margin.x:		4
+Glk.Window.margin.y:		2
+
+Glk.Window.Style.size:		0
+Glk.Window.Style.weight:	0
+Glk.Window.Style.oblique:	0
+Glk.Window.Style.proportional:	1
+Glk.Window.Style.indent:	0
+Glk.Window.Style.parIndent:	0
+Glk.Window.Style.justify:	1
+Glk.Window.Style.foreground:	black
+Glk.Window.Style.background:	WhiteSmoke
+Glk.Window.Style.linkColor:	blue
+
+Glk.Window.alert.foreground:		red1
+
+Glk.Window.input.foreground:		DarkRed
+Glk.Window.input.weight:		1
+
+Glk.Window.header.foreground:		DarkGreen
+Glk.Window.header.weight:		1
+Glk.Window.header.size:			+1
+
+Glk.Window.subheader.foreground:	DarkGreen
+Glk.Window.subheader.weight:		1
+
+Glk.Window.emphasized.foreground:	DarkGreen
+Glk.Window.emphasized.oblique:		1
+
+Glk.Window.preformatted.proportional:	0
+Glk.textGrid.Style.proportional:	0
+
+Glk.textGrid.Style.foreground:		NavyBlue
+
+Glk.textGrid.Style.Spec:	-b&h-lucidatypewriter-\
+%w{medium,bold}-%o{r,r}-normal-*-%s{8,10,12,14,18,24}-*-*-*-*-*-iso8859-1
+Glk.textBuffer.Style.Spec:	%p\
+{-b&h-lucidatypewriter-\
+%w{medium,bold}-%o{r,r}-normal-*-%s{8,10,12,14,18,24}-*-*-*-*-*-iso8859-1,\
+-adobe-helvetica-\
+%w{medium,bold}-%o{r,o}-normal--%s{8,10,12,14,18,24,34}-*-*-*-*-*-iso8859-1}
+
+#endif

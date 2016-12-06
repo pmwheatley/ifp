@@ -1,0 +1,57 @@
+2007-07-28 00:00  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Integrated into IFP 1.4.
+
+	* Added [DEFAULT] section as an alternative to global properties.
+	* Updated contained catalogs for new TADS3, Alan3, and Quest games.
+
+0000-00-00 00:00  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.4.
+
+	* Removed small (and rare) memory leaks.
+	* Stripped The/An/A from game titles before sorting for display.
+	* Added experimental iFiction ("Treaty of Babel") parsing to the XML
+	parser.
+	* Added pagination to the Games display, to avoid large game lists
+	overloading Glk libraries.
+
+0000-00-00 00:00  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.3.
+
+	* Added global 'encoding' property to .ini files, so that UTF-8
+	translations can be suppressed, as is possible with XML.
+	* Added interpreters information page, and about page.
+	* Added a GoTo "button", to allow game files and URLs to be entered.
+	directly at the keyboard, as well as by menu navigation.
+	* Added Full and Brief settings for games and interpreter pages.
+	* Assorted code improvements and refactoring, minor bug fixes.
+	* Implemented a full (too full?) range of accelerators, and also full
+	access to all features for non-hyperlinking Glks.
+	* Added a status line for non-hyperlinking Glks.
+	* Fixed redraw problems with message window on Glk resize.
+	* Corrected the code that identifies the root menu items.
+	* Rewrote the simple cataloging script in Python.
+	* Added correct (or semi-correct) game genres to the standard catalogs.
+
+0000-00-00 00:00  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.2.
+
+	* Added the ability to use RDF sequences to group games into categories
+	and sub-categories.
+	* Added Back "button" for navigating categories.
+	* Added page sorting by Title, Author, and Genre.
+	* Refactored several modules.
+	* Added UTF-8 to ISO 8859-1 translations, so that XML character
+	entities now work correctly.
+	* Added Escape and LeftArrow as 'Quit' and 'Back' accelerators.
+	* Added .ini file parser as an alternative metadata type.
+
+0000-00-00 00:00  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.1.
+
+	* First public release
+

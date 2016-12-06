@@ -1,0 +1,24 @@
+# I don't really know how to confirm that this is a Hugo file.  Is there some
+# magic number somewhere I could check?  For now, it seems that seeing a
+# nn-nn-nn date string at file offset 3 is a pattern, and so I have gone with
+# this.  It certainly doesn't conflict with any other game file patterns I
+# know of, and seems to work...
+
+engine_type="HUGO"
+engine_name="He"
+engine_version="3.1"
+
+acceptor_offset=3
+acceptor_length=8
+acceptor_pattern="^3[01] 3[0-9] 2d 3[0-3] 3[0-9] 2d 3[0-9] 3[0-9]$"
+
+author_name="Kent Tessman"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"This is a port of Hugo to Glk, the multi-platform interface layer designed
+ by Andrew Plotkin, which enables Hugo to run on platforms to which it has
+ not been directly ported.\n"
+engine_copyright="Copyright (C) 1995-2005 by Kent Tessman.\n"

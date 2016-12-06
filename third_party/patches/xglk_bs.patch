@@ -1,0 +1,12 @@
+diff -Naur xglk/xglk_prefs.c xglk_new/xglk_prefs.c
+--- xglk/xglk_prefs.c	Thu Apr 13 18:33:00 2000
++++ xglk_new/xglk_prefs.c	Sun Feb 23 11:59:19 2003
+@@ -267,7 +267,7 @@
+     &cx, &xval)) 
+     prefs.buffersize = atoi(xval.addr);
+   else
+-    prefs.buffersize = 8000;
++    prefs.buffersize = 16000;
+ 
+   if (db && XrmGetResource(db,
+     "glk.textBuffer.saveSlack", "Glk.TextBuffer.SaveSlack",

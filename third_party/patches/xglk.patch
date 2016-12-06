@@ -1,0 +1,134 @@
+diff -Naur xglk_orig/Makefile xglk/Makefile
+--- xglk_orig/Makefile	Sat Apr 15 12:13:28 2000
++++ xglk/Makefile	Thu Oct 25 00:18:22 2001
+@@ -84,7 +84,7 @@
+ #CC = cc
+ CC = gcc
+ 
+-CFLAGS = -O -ansi $(PNGFLAG) $(JPEGFLAG) $(PNGINCLUDE) $(JPEGINCLUDE) -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -Wbad-function-cast $(SYSTEMFLAGS) $(XINCLUDE)
++CFLAGS = -O $(PNGFLAG) $(JPEGFLAG) $(PNGINCLUDE) $(JPEGINCLUDE) -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -Wbad-function-cast $(SYSTEMFLAGS) $(XINCLUDE)
+ LDFLAGS =
+ LIBS = $(XLIB) $(PNGLIB) $(JPEGLIB) $(SYSTEMLIBS)
+ 
+diff -brcN xglk-virgin/xglk_pict.c xglk/xglk_pict.c
+*** xglk-virgin/xglk_pict.c	Thu Aug 26 13:42:12 1999
+--- xglk/xglk_pict.c	Tue Sep 11 18:36:50 2001
+***************
+*** 305,311 ****
+    channels = cinfo.output_components;
+  
+    destdepth = xiodepth;
+!   destrowbytes = (width * destdepth + 7) / 8;
+    if (destrowbytes & 31)
+      destrowbytes = (destrowbytes | 31) + 1;
+    destdata = malloc(destrowbytes * height);
+--- 305,311 ----
+    channels = cinfo.output_components;
+  
+    destdepth = xiodepth;
+!   destrowbytes = (width * ((destdepth==24)?32:destdepth) + 7) / 8;
+    if (destrowbytes & 31)
+      destrowbytes = (destrowbytes | 31) + 1;
+    destdata = malloc(destrowbytes * height);
+***************
+*** 406,412 ****
+    channels = png_get_channels(png_ptr, info_ptr);
+  
+    destdepth = xiodepth;
+!   destrowbytes = (width * destdepth + 7) / 8;
+    if (destrowbytes & 31)
+      destrowbytes = (destrowbytes | 31) + 1;
+    destdata = malloc(destrowbytes * height);
+--- 406,412 ----
+    channels = png_get_channels(png_ptr, info_ptr);
+  
+    destdepth = xiodepth;
+!   destrowbytes = (width * ((destdepth==24)?32:destdepth) + 7) / 8;
+    if (destrowbytes & 31)
+      destrowbytes = (destrowbytes | 31) + 1;
+    destdata = malloc(destrowbytes * height);
+***************
+*** 712,718 ****
+  	  destptr[gsb] = srcptr[0];
+  	  destptr[bsb] = srcptr[0];
+  	  srcptr += channels;
+! 	  destptr += 3;
+  	}
+  	srcrowptr += srcrowbytes;
+  	destrowptr += destrowbytes;
+--- 712,718 ----
+  	  destptr[gsb] = srcptr[0];
+  	  destptr[bsb] = srcptr[0];
+  	  srcptr += channels;
+! 	  destptr += 4;
+  	}
+  	srcrowptr += srcrowbytes;
+  	destrowptr += destrowbytes;
+***************
+*** 727,733 ****
+  	  destptr[gsb] = srcptr[1];
+  	  destptr[bsb] = srcptr[2];
+  	  srcptr += channels;
+! 	  destptr += 3;
+  	}
+  	srcrowptr += srcrowbytes;
+  	destrowptr += destrowbytes;
+--- 727,733 ----
+  	  destptr[gsb] = srcptr[1];
+  	  destptr[bsb] = srcptr[2];
+  	  srcptr += channels;
+! 	  destptr += 4;
+  	}
+  	srcrowptr += srcrowbytes;
+  	destrowptr += destrowbytes;
+***************
+*** 896,902 ****
+    int destiptr, srciptr;
+    int *rowmap;
+  
+!   destrowbytes = (destwidth * depth + 7) / 8;
+    if (destrowbytes & 31)
+      destrowbytes = (destrowbytes | 31) + 1;
+    destdata = (unsigned char *)malloc(destrowbytes * destheight);
+--- 896,902 ----
+    int destiptr, srciptr;
+    int *rowmap;
+  
+!   destrowbytes = (destwidth * ((depth==24)?32:depth) + 7) / 8;
+    if (destrowbytes & 31)
+      destrowbytes = (destrowbytes | 31) + 1;
+    destdata = (unsigned char *)malloc(destrowbytes * destheight);
+***************
+*** 938,944 ****
+        destiptr += 2;
+      }
+    }
+!   else if (depth == 32) {
+      for (ix=0; ix<destwidth; ix++) { 
+        rowmap[destiptr] = srciptr;
+        rowmap[destiptr+1] = srciptr+1;
+--- 938,944 ----
+        destiptr += 2;
+      }
+    }
+!   else if ((depth == 32) || (depth == 24)) {
+      for (ix=0; ix<destwidth; ix++) { 
+        rowmap[destiptr] = srciptr;
+        rowmap[destiptr+1] = srciptr+1;
+***************
+*** 983,989 ****
+  
+      for (jx=0; jx<destheight; jx++) {
+  
+!       int val = destwidth * depth / 8;
+        for (ix=0; ix<val; ix++) {
+  	destrow[ix] = srcrow[rowmap[ix]];
+        }
+--- 983,989 ----
+  
+      for (jx=0; jx<destheight; jx++) {
+  
+!       int val = destwidth * ((depth==24)?32:depth) / 8;
+        for (ix=0; ix<val; ix++) {
+  	destrow[ix] = srcrow[rowmap[ix]];
+        }

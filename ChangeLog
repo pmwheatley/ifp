@@ -1,0 +1,142 @@
+2007-08-27  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 1.4.
+
+	* Updated to the latest versions of the Hugo, TADS2, SCARE, Magnetic,
+	and Level9 interpreters.
+	* Added TADS3 and Alan3 interpreters, and Git as an alternative to
+	Glulx.
+	* Added Frotz as an alternative to Nitfol for Z-machine games.
+	* Added Geas interpreter for Quest games.
+	* Refactored code into separate subdirectories for IFP and third-party
+	components.
+	* Refactored the complete makefile hierarchy; separated out individual
+	makefiles for individual interpreters.
+	* Dispensed with IFP's own Glk library plugin format.  IFP now uses
+	Glkloader format pluggable Glk libraries directly.
+	* Added Garglk and Gtkglk libraries.
+	* Integrated Gamebox into the main source tree.
+	* Rewrote config file parser for better error reporting and robustness.
+	* Internal code adjustments, refactoring, optimization, and readabilty
+	improvements (breaks backwards compatibility with old IFP plugins).
+
+2005-05-09  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 1.3.
+
+	* Updated to the latest version of the Hugo interpreter, version 3.1.
+	* Updated to version 2.5.9 of the TADS2 interpreter.
+	* Updated to version 1.3.3 of the SCARE interpreter.
+	* Switched to building Nitfol without debugging, for improved
+	stability.
+	* Optimized builds of the Glulx and Alan interpreters.
+	* Added dynamic loading of Glk libraries, and created three
+	corresponding pluggable Glk's.
+	* Combined xifpe and ifpe into a single binary, with runtime Glk
+	selection.
+	* Rewrote legion to run with all three supplied Glk libraries.
+	* Added IFP user-specific configurations and preferences through a
+	.ifprc file.
+	* Removed non-essential material from the IFP library man pages.
+	* Copious internal code style changes, optimizations, and adjustments.
+
+2004-08-12  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 1.2.
+
+	* Updated to the latest version of the Hugo interpreter, including
+	graphics support.
+	* Updated to the latest version of the Magnetic Scrolls interpreter,
+	now with graphics animations.
+	* Updated to the latest versions of the Level9 and AGiliTy
+	interpreters.
+	* Updated to version 2.5.8 of the TADS2 interpreter.
+	* Added the SCARE interpreter to enable IFP to handle Adrift games.
+	* Additional patches to Nitfol to fix Z-machine V1 and V2 game
+	problems.
+	* Yet more patches to Nitfol to mask display flicker and other
+	miscellanea.
+	* Patches to Advsys to tidy up assorted Glk library complaints.
+	* Minor fixes to IFP HTTP and FTP URL download cancel functions.
+	* Defined Latin-1 as the native character set for Glkterm builds of
+	IFP.
+	* Updated IFP's garbage collection hashing to enable it to cope
+	with SCARE's extreme heap space demands.
+	* Other minor internal adjustments.
+
+2003-03-01  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 1.1.
+
+	* Updated to the latest versions of the Tads, Hugo (twice), Level9,
+	AGiliTy, and Magnetic Scrolls interpreters.
+	* Added a Nitfol patch to fix eight bit characters in Spanish games.
+	* Added a further Nitfol patch to fix null pointer dereferences in
+	Nitfol's game debugging code.
+	* Applied an Xglk patch to permit eight bit characters to be entered.
+	* Added example games to the binary distribution.
+	* The usual minor internal adjustments and code improvements.
+
+2002-07-04  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.5.
+
+	* Added the Magnetic Scrolls interpreter.
+	* Updated to the latest versions of the Tads, Hugo, Level9, and
+	AGiliTy interpreters.
+	* Made the Pkunzip plugin more lenient when unable to uncompress
+	some archived files.
+	* Corrected #includes in IFP header files to work with any Glk
+	library; previously, these #include'd some Xglk-specific header files.
+	* Minor internal interface adjustments, and some library error
+	tightening.
+	* IFP is probably stable enough now to shake off the "beta" tag.
+
+2002-03-07  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.4.
+
+	* Added the AdvSys 1.2 interpreter.
+	* Added the Level 9 interpreter (SNA format files only).
+	* Minor improvements to URL cache code.
+	* Fixed an omission that caused xlegion to crash unpredictably some
+	time after failing to uncompress a game.
+	* General code tidy up and internal adjustments.
+
+2002-02-13  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.3.
+
+	* Added the AGiliTy 1.1.1 interpreter, for AGT (and AGX) games.
+	* Use of hash tables for improved performance of memory allocation
+	functions.
+
+2001-12-03  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.2. 
+
+	* Built Xglk library with 24-bit display patch.
+	* Added Glkterm build, and curses version of ifpe.  The previous ifpe
+	is now xifpe.
+	* Extended URLs to download data via FTP, in addition to HTTP and
+	local files.
+	* Remote URL data is now downloaded asynchronously, using SIGIO.
+	* Added a URL cache, so that playing the same URL multiple times
+	requires only one download.
+	* Fixed a fault in the functions that reset Glk; this fault caused
+	xlegion to crash after playing some games (notably Glulx).
+	* Fixed an omission where plugins failed to unload their plugin lists;
+	this fault caused xlegion to crash on occasion after playing two or
+	more compressed games of different game file types.
+	* IFP now automatically detects loading of plugins that may in turn
+	load other plugins, and takes steps to ensure that the shared objects
+	in each get their own private execution space.
+	* Added full Blorb support.  IFP can now handle Blorb files containing
+	either Glulx or Z-machine games.
+
+2001-11-11  Simon Baldwin <simon_baldwin@yahoo.com>
+
+	* Release 0.1. 
+
+	* First public release.
+

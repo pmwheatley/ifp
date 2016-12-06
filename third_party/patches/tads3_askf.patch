@@ -1,0 +1,21 @@
+diff -Naur tads3/osglk.c tads3_new/osglk.c
+--- tads3/osglk.c	2006-09-08 22:58:28.000000000 -0700
++++ tads3_new/osglk.c	2007-08-07 23:08:03.000000000 -0700
+@@ -431,6 +431,7 @@
+ int os_askfile(const char *prompt, char *fname_buf, int fname_buf_len,
+                int prompt_type, os_filetype_t file_type)
+ {
++#ifndef GLK_ANSI_ONLY
+ 	frefid_t fileref;
+ 	glui32 gprompt, gusage;
+ 
+@@ -455,6 +456,9 @@
+ 	glk_fileref_destroy(fileref);
+ 
+ 	return OS_AFE_SUCCESS;
++#else
++	return OS_AFE_FAILURE;
++#endif
+ }
+ 
+ /* 

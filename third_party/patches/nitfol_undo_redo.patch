@@ -1,0 +1,61 @@
+*** z_io.c.old	Mon Nov  1 08:56:06 1999
+--- z_io.c	Mon Nov  1 08:58:15 1999
+***************
+*** 900,912 ****
+  
+    length = n_read(text + 1, maxlen, operand[1], 0,
+  		  operand[2], operand[3], &term);
+!   if(!read_abort)
+      LOBYTEwrite(text + 1 + length, 0);  /* zero terminator */
+  
+!   if(allow_saveundo) {
+!     if(!has_done_save_undo && auto_save_undo)
+!       saveundo(FALSE);
+!     has_done_save_undo = FALSE;
+    }
+  }
+  
+--- 900,913 ----
+  
+    length = n_read(text + 1, maxlen, operand[1], 0,
+  		  operand[2], operand[3], &term);
+!   if(!read_abort) {
+      LOBYTEwrite(text + 1 + length, 0);  /* zero terminator */
+  
+!     if(allow_saveundo) {
+!       if(!has_done_save_undo && auto_save_undo)
+!         saveundo(FALSE);
+!       has_done_save_undo = FALSE;
+!     }
+    }
+  }
+  
+***************
+*** 928,940 ****
+    if(!read_abort) {
+      LOBYTEwrite(text + 1, length);
+      mop_store_result(term);
+    }
+- 
+-   if(allow_saveundo) {
+-     if(!has_done_save_undo && auto_save_undo)
+-       saveundo(FALSE);
+-     has_done_save_undo = FALSE;
+-   }
+  }
+  
+  void op_read_char(void)
+--- 929,941 ----
+    if(!read_abort) {
+      LOBYTEwrite(text + 1, length);
+      mop_store_result(term);
++   
++     if(allow_saveundo) {
++       if(!has_done_save_undo && auto_save_undo)
++         saveundo(FALSE);
++       has_done_save_undo = FALSE;
++     }
+    }
+  }
+  
+  void op_read_char(void)

@@ -1,0 +1,27 @@
+# AdvSys files have a marker string "ADVSYS" at bytes 2-7, and a 16-bit
+# version number at bytes 8 and 9.  AdvSys 1.2 refuses the file if the
+# version number is not 101 or 102.
+
+# There's a minor complication with this, however.  AdvSys stores its game
+# data in "complemented" format, transforming each byte from the input file 
+# with new = ~(old + 30).  So, "ADVSYS" actually appears as A0 9D 8B 8E 88 8E,
+# and 101 or 102 as 7B E1 or 7C E1.
+
+engine_type="AdvSys"
+engine_name="AdvSys"
+engine_version="1.2"
+
+acceptor_offset=2
+acceptor_length=8
+acceptor_pattern="^a0 9d 8b 8e 88 8e 7[bc] e1$"
+
+author_name="David Betz"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"ADVSYS is a special purpose programming language that was specifically
+ designed to be used to write computer text adventure games.  The Glk port
+ code is by Michael Chen.\n"
+engine_copyright="Copyright (C) 1986 by David Betz.\n"

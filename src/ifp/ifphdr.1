@@ -1,0 +1,158 @@
+.\" vim: set syntax=nroff:
+.\"
+.\" Copyright (C) 2001-2007  Simon Baldwin (simon_baldwin@yahoo.com)
+.\" 
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version 2
+.\" of the License, or (at your option) any later version.
+.\" 
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\" 
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307
+.\" USA
+.\"
+.\"
+.TH IFPHDR 1 "Interactive Fiction Plugins" "IFP" \" -*- nroff -*-
+.SH NAME
+.\"
+ifphdr \- header structure builder for IFP plugins
+.\"
+.\"
+.\"
+.SH SYNOPSIS
+.\"
+.B ifphdr
+input_file [ output_file ]
+.PP
+.\"
+.\"
+.\"
+.SH DESCRIPTION
+.\"
+.PP
+.B ifphdr
+reads an input file in shell-script format, and outputs 'C' code suitable
+for inclusion as an IFP header in an Interactive Fiction plugin.  The
+following values may be defined in the input file:
+.TP
+.I "header_version"
+Defines the header version number to be stamped into the IFP header
+structure.  If omitted, it defaults to the current version number that
+matches the structure being written.  This definition should normally
+be omitted from input files.
+.TP
+.I "build_timestamp"
+A string giving the date and time of the plugin build.  If omitted, it
+defaults to the date and time as returned by the 'C' preprocessor on
+compiling the module.
+.TP
+.I "engine_type"
+This is a mandatory string, and indicates the interpreter engine type,
+for example, "Z-machine".
+.TP
+.I "engine_name"
+This is a mandatory string, naming the engine, for example, "Nitfol".
+.TP
+.I "engine_version"
+This is a mandatory string, defining the version number of the engine,
+for example "0.5".  If both name and version match in two plugins,
+IFP will consider them identical, and ignore the second found.
+.TP
+.I "blorb_pattern"
+This is a regular expression that defines the Blorb exec type, if any,
+that the interpreter will handle.  Patterns are specified as expressions
+to match "asciified" type data.  For example, if the Blorb exec type in
+a file is 'GLUL', this is converted to "47 4C 55 4C", so the pattern
+to match this is "^47 4C 55 4C$".  If not specified, the default value
+in the 'C' header is NULL, indicating that this interpreter does not
+handle Blorb file input.
+.TP
+.I "acceptor_offset"
+This is the file offset to read from when reading in game file header
+information in order to determine if the interpreter can handle the file.
+The value must be 0 or greater.
+.TP
+.I "acceptor_length"
+This is the number of bytes of data to read from the file to test whether
+this interpreter can handle the file.  If set to 0, this indicates that
+the interpreter does not handle normal input data.  Otherwise, the value
+must be greater than 0.
+.TP
+.I "acceptor_pattern"
+This is the regular expression, applied to an "asciified" conversion of
+the data read from the file at acceptor_offset, used to test if the
+interpreter can handle the data in the file.  If not specified, the
+default value in the 'C' header is NULL, indicating that this interpreter
+does not handle normal input data.
+.TP
+.I "author_name, author_email, engine_home_url"
+.TP
+.I "builder_name, builder_email, engine_description"
+.TP
+.I "engine_copyright"
+These are administrative information used to describe the plugin.
+Interpreter programs may use or display the information they contain,
+but IFP ignores their contents.  If undefined, they are set to NULL in
+the 'C' structure output.
+.PP
+The input file may contain comment lines.  These are lines that begin
+with the '#' character.
+.PP
+.B ifphdr
+will refuse to overwrite an existing output file.  If already present,
+the file must be renamed or removed manually first.
+.PP
+.\"
+.\"
+.\"
+.SH RETURN VALUE
+.\"
+.PP
+.B ifphdr
+returns zero on success, and non-zero if it finds a problem in the input
+file.
+.PP
+.\"
+.\"
+.\"
+.SH EXAMPLES
+.\"
+The following is an example input file:
+.IP
+.nf
+engine_type="TADS"
+engine_name="Tadsr"
+engine_version="2.5.5"
+
+acceptor_offset=0
+acceptor_length=9
+acceptor_pattern="^54 41 44 53 32 20 62 69 6e$"
+
+author_name="Michael J. Roberts"
+author_email="mjr_@hotmail.com"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\\
+"This is a Unix version of the TADS 2.5.5 source distribution,
+ provided to make it easier for Unix users to compile the
+ distribution on their own systems.\\n"
+engine_copyright="Copyright (c) 1996 by Michael J. Roberts.
+  All Rights Reserved.\\n"
+.fi
+.PP
+.\"
+.\"
+.\"
+.SH SEE ALSO
+.\"
+Man pages for \fBlegion\fP(1), \fBifpe\fP(1), \fBifplib\fP(3),
+and \fBifppilib\fP(3).
+.\"

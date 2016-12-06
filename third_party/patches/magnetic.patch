@@ -1,0 +1,50 @@
+diff -Naur magnetic/Glk/Makefile.glk magnetic_new/Glk/Makefile.glk
+--- magnetic/Glk/Makefile.glk	2003-07-23 03:35:44.000000000 -0700
++++ magnetic_new/Glk/Makefile.glk	2007-08-10 20:31:07.000000000 -0700
+@@ -1,9 +1,9 @@
+ # Set locations of Glk library and include directories, and Glk make include.
+ # For building the IFP plugin, you should probably use Xglk headers.
+ # For X Glk library:
+-GLKLIBDIR	= ../../xglk
+-GLKINCDIR	= ../../xglk
+-GLKMAKEINC	= ../../xglk/Make.xglk
++GLKLIBDIR	= ../../../src/ifp
++GLKINCDIR	= ../../../src/ifp
++GLKMAKEINC	= ../../../src/ifp/Make.ifppi
+ # ..., or for curses Glk library:
+ #GLKLIBDIR	= ../../glkterm
+ #GLKINCDIR	= ../../glkterm
+@@ -15,13 +15,13 @@
+ 
+ # Set locations of IFP library and include directories, and header tool.
+ # For installed IFP, these would be something like:
+-IFPLIBDIR	= /usr/lib
+-IFPINCDIR	= /usr/include
+-IFPHDRTOOL	= /usr/bin/ifphdr
++#IFPLIBDIR	= /usr/lib
++#IFPINCDIR	= /usr/include
++#IFPHDRTOOL	= /usr/bin/ifphdr
+ # ...whereas for IFP newly built alongside xglk, more like:
+-#IFPLIBDIR	= ../../ifp
+-#IFPINCDIR	= ../../ifp
+-#IFPHDRTOOL	= ../../ifp/ifphdr
++IFPLIBDIR	= ../../../src/ifp
++IFPINCDIR	= ../../../src/ifp
++IFPHDRTOOL	= ../../../src/ifp/ifphdr
+ 
+ # IFP header definition.
+ IFPHDR		= magnetic.hdr
+@@ -63,10 +63,10 @@
+ 	rm -f magnetic_plugin.c
+ 	$(IFPHDRTOOL) $(IFPHDR) magnetic_plugin.c
+ 	$(CC) -I$(IFPINCDIR) $(CFLAGS) -c magnetic_plugin.c
+-	$(LD) -u ifpi_force_link -shared -Bsymbolic			\
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic		\
+ 		-o $@ $(OBJS)						\
+-		magnetic_plugin.o -L$(IFPLIBDIR) -lifppi -lc		\
+-		--wrap toupper --wrap tolower
++		magnetic_plugin.o -L$(IFPLIBDIR) $(GLKLIB) -lc		\
++		-Wl,--wrap,toupper -Wl,--wrap,tolower
+ 
+ # Directory cleanup.
+ clean:

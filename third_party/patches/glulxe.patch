@@ -1,0 +1,57 @@
+diff -Naur glulxe/Makefile glulxe_new/Makefile
+--- glulxe/Makefile	2007-02-15 09:15:39.000000000 -0800
++++ glulxe_new/Makefile	2007-08-09 22:18:38.000000000 -0700
+@@ -7,9 +7,9 @@
+ # sets of values appear below; uncomment one of them and change the
+ # directories appropriately.
+ 
+-GLKINCLUDEDIR = ../cheapglk
+-GLKLIBDIR = ../cheapglk
+-GLKMAKEFILE = Make.cheapglk
++#GLKINCLUDEDIR = ../cheapglk
++#GLKLIBDIR = ../cheapglk
++#GLKMAKEFILE = Make.cheapglk
+ 
+ #GLKINCLUDEDIR = ../glkterm
+ #GLKLIBDIR = ../glkterm
+@@ -19,21 +19,30 @@
+ #GLKLIBDIR = ../xglk
+ #GLKMAKEFILE = Make.xglk
+ 
++GLKINCLUDEDIR = ../../src/ifp
++GLKLIBDIR = ../../src/ifp
++GLKMAKEFILE = Make.ifppi
++
+ # Pick a C compiler.
+ #CC = cc
+ CC = gcc
+ 
+-OPTIONS = -g -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -DOS_UNIX
++OPTIONS = -O2 -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -DOS_UNIX
+ 
+ include $(GLKINCLUDEDIR)/$(GLKMAKEFILE)
+ 
+-CFLAGS = $(OPTIONS) -I$(GLKINCLUDEDIR)
++CFLAGS = -fPIC $(OPTIONS) -I$(GLKINCLUDEDIR)
+ LIBS = -L$(GLKLIBDIR) $(GLKLIB) $(LINKLIBS) 
+ 
+ OBJS = main.o files.o vm.o exec.o funcs.o operand.o string.o glkop.o \
+   heap.o serial.o search.o gestalt.o osdepend.o
+ 
+-all: glulxe
++all: glulxe-0.4.2.so
++
++PLUGIN_OBJS = ../glulxe_plugin.o
++glulxe-0.4.2.so: $(OBJS) unixstrt.o $(PLUGIN_OBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		 -o $@ $(OBJS) unixstrt.o $(PLUGIN_OBJS) $(LIBS) -lc
+ 
+ glulxe: $(OBJS) unixstrt.o
+ 	$(CC) $(OPTIONS) -o glulxe $(OBJS) unixstrt.o $(LIBS)
+@@ -47,5 +56,5 @@
+ gestalt.o: gestalt.h
+ 
+ clean:
+-	rm -f *~ *.o glulxe glulxdump
++	rm -f *~ *.o glulxe glulxdump *.so
+ 

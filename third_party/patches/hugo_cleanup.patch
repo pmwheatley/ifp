@@ -1,0 +1,69 @@
+diff -Naur hugo/source/hemisc.c hugo_new/source/hemisc.c
+--- hugo/source/hemisc.c	2006-01-05 10:13:12.000000000 -0800
++++ hugo_new/source/hemisc.c	2007-07-23 22:21:55.000000000 -0700
+@@ -956,7 +956,10 @@
+ 
+ 		fref = glk_fileref_create_by_name(fileusage_Data | fileusage_BinaryMode,
+ 			fileiopath, 0);
+-		io = glk_stream_open_file(fref, filemode_Read, 0);
++		if (glk_fileref_does_file_exist(fref))
++			io = glk_stream_open_file(fref, filemode_Read, 0);
++		else
++			io = NULL;
+ 		glk_fileref_destroy(fref);
+ 		if (io==NULL) goto LeaveFileIO;
+ #endif
+@@ -2037,7 +2040,10 @@
+ 
+ 				fref = glk_fileref_create_by_prompt(fileusage_InputRecord | fileusage_TextMode,
+ 					filemode_Read, 0);
+-				playback = glk_stream_open_file(fref, filemode_Read, 0);
++				if (glk_fileref_does_file_exist(fref))
++					playback = glk_stream_open_file(fref, filemode_Read, 0);
++				else
++					playback = NULL;
+ 				glk_fileref_destroy(fref);
+ 				if (!playback)
+ 					return 0;
+diff -Naur hugo/source/heres.c hugo_new/source/heres.c
+--- hugo/source/heres.c	2006-01-05 10:13:10.000000000 -0800
++++ hugo_new/source/heres.c	2007-07-23 22:21:55.000000000 -0700
+@@ -370,7 +370,10 @@
+ 	/* Glk implementation */
+ 	fref = glk_fileref_create_by_name(fileusage_Data | fileusage_BinaryMode,
+ 		filename, 0);
+-	resource_file = glk_stream_open_file(fref, filemode_Read, 0);
++	if (glk_fileref_does_file_exist(fref))
++		resource_file = glk_stream_open_file(fref, filemode_Read, 0);
++	else
++		resource_file = NULL;
+ 	glk_fileref_destroy(fref);
+ 	if (!resource_file)
+ 	{
+@@ -469,7 +472,10 @@
+ 	/* Glk implementation */
+ 	fref = glk_fileref_create_by_name(fileusage_Data | fileusage_BinaryMode,
+ 		resname, 0);
+-	resource_file = glk_stream_open_file(fref, filemode_Read, 0);
++	if (glk_fileref_does_file_exist(fref))
++		resource_file = glk_stream_open_file(fref, filemode_Read, 0);
++	else
++		resource_file = NULL;
+ 	glk_fileref_destroy(fref);
+ 	if (!resource_file)
+ 	{
+diff -Naur hugo/source/herun.c hugo_new/source/herun.c
+--- hugo/source/herun.c	2006-01-05 10:13:08.000000000 -0800
++++ hugo_new/source/herun.c	2007-07-23 22:21:55.000000000 -0700
+@@ -1353,7 +1353,10 @@
+ 	savefile = glk_fileref_create_by_prompt(fileusage_SavedGame | fileusage_BinaryMode,
+ 		filemode_Read, 0);
+ 	if (!savefile) return 0;
+-	save = glk_stream_open_file(savefile, filemode_Read, 0);
++	if (glk_fileref_does_file_exist(savefile))
++		save = glk_stream_open_file(savefile, filemode_Read, 0);
++	else
++		save = NULL;
+ 	glk_fileref_destroy(savefile);
+ 	if (!save) return 0;
+ 

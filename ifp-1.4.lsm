@@ -1,0 +1,20 @@
+Begin3
+Title:          IFP
+Version:        1.4
+Entered-date:   27 Aug 2007
+Description:    IFP is a package that implements Interactive Fiction interp-
+                reter engine plugins, creating a single IF game-playing
+                program that can run a number of popular IF game formats.
+                It currently includes interpreters for Z-machine, TADS,
+                Alan, Hugo, Glulx, AGT, Advsys, Level9, Magnetic Scrolls,
+                Adrift, and Quest, and is based on the Glk I/O library.
+Keywords:       IF interactive fiction inform infocom z-machine tads hugo alan
+Author:         simon_baldwin@yahoo.com (Simon Baldwin)
+Maintained-by:  simon_baldwin@yahoo.com (Simon Baldwin)
+Primary-site:   ftp://www.ifarchive.org/if-archive/programming/ifp
+                298kB ifp-1.4-core.tgz
+Alternate-site: none
+Original-site:  none
+Platforms:      Linux
+Copying-policy: GPL
+End

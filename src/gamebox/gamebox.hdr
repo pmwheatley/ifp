@@ -1,0 +1,28 @@
+# Gamebox accepts all XML input files, whether or not they actually contain a
+# game collection.  It also accepts INI files, but only if they start with
+# "GAMEBOX_0.4" or "GAMEBOX_0.3" as a first line comment.
+
+engine_type="Xml+Ini"
+engine_name="Gamebox"
+engine_version="0.4"
+
+acceptor_offset=0
+acceptor_length=12
+acceptor_pattern="^(3c 3f 78 6d 6c .*|\
+(23|3b) 47 41 4d 45 42 4f 58 5f 30 2e (34|33))$"
+
+author_name="Simon Baldwin"
+author_email="simon_baldwin@yahoo.com"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"Gamebox takes an IF game collection described by an XML or INI input file,
+ and offers a browser-like interface to its contained games.\n"
+engine_copyright=\
+"Copyright (C) 2006-2007  Simon Baldwin (simon_baldwin@yahoo.com)\n
+This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.\n"

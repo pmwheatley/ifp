@@ -1,0 +1,327 @@
+
+IFP reads an initial configuration from either .ifprc in your home directory,
+or /etc/ifprc for system wide configurations.  You can indicate an absolute
+location for a configuration file by setting a value for IFP_CONFIGURATION
+before starting an IFP program.  The configuration file lets you indicate both
+global IFP options and interpreter-specific options.
+
+The IFP library understands the following global options, all of which may be
+overridden by environment variables:
+
+  glk_libraries  The list of loadable Glk libraries (or absolute paths) to
+                 try and load on startup
+  plugin_path    A colon-separated path to search for loadable Glk libraries
+                 and interpreter plugins
+  url_timeout    Delay in microseconds for asynchronous URL pauses
+  cache_limit    Size in bytes of the URL cache before files are removed from
+                 the cache
+
+After the global options, the configuration file may contain any number of
+interpreter-specific sections.  An introductory '[ ... ]' header denotes an
+interpreter-specific section.  IFP registers the value of the 'options'
+property in these sections as interpreter options, and then passes them, in
+the order given, to an interpreter plugin when it starts one to run a game.
+
+A simple example .ifprc file might look something like
+
+  [DEFAULT]
+  glk_libraries=xglk,termglk,cheapglk
+  plugin_path=/usr/local/lib/ifp:/usr/lib/ifp
+  url_timeout=100000
+  cache_limit=10485760
+
+  [geas]
+  options=-w
+
+
+The following notes might be useful when running games with IFP
+
+Z-machine games
+
+Z-machine game file names generally have either the extension .dat, typically
+used by an Infocom game, or .z1 to .z8, typically used by an Inform game.  A
+Z-machine game is normally held in a single system file.
+
+A compiled game encodes, in its first file byte, the version of the Z-machine
+specification for which it was built.  In general, the number in an Inform
+extension reflects version number, but this is only a convention, and so the
+file extension might not always be accurate.  Inform .dat extensions offer no
+clues about the Z-machine version for which the game was compiled.
+
+IFP currently contains are two Z-machine interpreters in IFP: Frotz, and
+Nitfol.  Both accept all valid Z-machine files and Blorb encoded Z-machine
+games.  Blorb Z-machine games have the executable resource type "ZCOD".
+
+The Frotz interpreter claims to run all game versions except version 6.  The
+Nitfol interpreter claims the ability to run all game versions 1 to 8,
+although the graphical features of version 6 may not be completely implemented.
+
+The Frotz interpreter does not work correctly with non-windowing Glk libraries
+such as cheapglk.  It suppresses all upper window text, which is usually
+fairly workable except where the game is prompting in this window using help
+menus.  If using cheapglk, you should probably route Z-machine games to
+Nitfol.
+ 
+
+TADS games
+
+By convention, TADS version 2 game file names have the extension .gam, and
+TADS version 3 files have the extension .t3.  A TADS game is a single system
+file.
+
+The first few bytes of a TADS game file are "TADS", which make them very easy
+to identify, and therefore easy for IFP to route to a TADS interpreter
+plugin.
+
+At present, IFP contains separate TADS interpreters, for version 2 and for
+version 3 games.  Although IFP routes TADS version 2 games to the version 2
+interpreter, the version 3 interpreter can also run version 2 games if these
+games are routed to it.
+ 
+
+HUGO games
+
+Normally, HUGO game file names have the extension .hex, and the complete game
+may be held in either a single system file, or in multiple files, with the
+additional files containing extra resources like images and sound.
+
+The IFP plugin for HUGO accepts games by looking for a date string, having the
+format mm-dd-yy, at byte offset three in a file.
+
+The version of HUGO built into IFP understands how to display HUGO graphics.
+To get this to work, you need to have both the .hex file and the associated
+graphics data file in the same directory.  HUGO games with graphics generally
+ship with all the required files held in a single .zip file.  You will also
+need to set the current working directory for the IFP executable to the
+directory containing the game and its graphics file; this is not terribly
+convenient, but is necessary because Glk libraries default to looking for
+files to open in the current working directory of the process.
+
+Graphics in HUGO games stretches Glk's capabilities a little.  The graphical
+screen model that HUGO uses does not map well onto Glk, so some graphics may
+not always display perfectly; in particular, Glk cannot positions images in the
+main window in the way that other HUGO interpreters can.  Nevertheless, for
+popular HUGO games such as Guilty Bastards, the Glk HUGO port gives good
+results.  Graphical HUGO games will play without graphics if the graphics data
+file is not available to IFP.
+ 
+
+Alan games
+
+Alan version 2 games are normally distributed as a pair of files, having the
+same base file name, and the extensions .acd and .dat.  Alan version 3 games
+are a single file with the extension .a3c.
+
+Alan .dat files have no discernable magic number or file identifier in them.
+Alan .acd files have the Alan version number in the first two bytes of the
+file.  The Alan version 2 interpreter built for IFP can run Alan games at
+versions 2.7 and 2.8, so the plugin for Alan games looks for these two values
+in the version number bytes of a file.  Alan version 3 games have an easily
+recognizable and unambiguous header.
+
+When running Alan version 2 games with IFP, you should give the .acd file's
+name to the IFP binary, since this is the Alan game data file that has a
+recognizable signature in it.
+
+Alan version 2 games are often packed into .zip archives, so a convenient way
+to run an Alan game is to simply point IFP at the /.zip/ archive; IFP's
+unarchive plugin will automatically unzip the archive, then find the .acd file
+in it, and hand off control to the Alan version 2 plugin.
+ 
+
+Glulx games
+
+Glulx games are typically all in a single system file, and the file name, by
+convention, has the extension .ulx.
+
+The first few bytes of a Glulx game file are always "Glul", and the Glulx and
+Git plugins for IFP use this to recognize games that they can interpret.  For
+now, two alternate Glulx interpreters are supplied; IFP will choose the first
+found when deciding between them.
+
+Glulx games can also be held in a Blorb file.  In this case, the Glulx and Git
+plugins will recognize a Blorb file having an executable resource type "GLUL".
+ 
+
+AGT games
+
+AGT games are normally distributed as a collection of eight or more related
+files.  All files have the same base name, but there are multiple differing
+extensions: .da1, .da2, .da3, .ins, .d$$, and so on.  There is also an
+alternative format that is special to AGiliTy, in which the complete game is
+held in a single file with the extension .agx.
+
+Single file /.agx/ games are easily recognized by the AGiliTy interpreter
+plugin built for IFP, since they begin with the four bytes 0x58, 0xc7, 0Xc1,
+and 0x51.
+
+For multiple file games, the only file which has a recognizable signature
+inside it is the .d$$ file, so when running an AGiliTy game like this through
+IFP, this is the file name that you should give to the IFP binary.
+
+As with Alan games, AGT games are often packed into .zip archives, so a
+convenient way to run an AGT game is to point IFP at the .zip archive, and have
+IFP's unarchive plugin automatically unzip the archive and find, and then run,
+the AGT game in it.
+
+When running AGT games directly from .zip files, you may occasionally see a
+warning from IFP about a problem uncompressing part of the archive.  Typically,
+the error code will be 81.  This is an indication that one or more of the files
+in the .zip archive could not be uncompressed -- normally this will be a
+"shrunk" file.  Linux's unzip command refuses to handle this compression type
+for legal reasons.
+
+On seeing error 81 unzipping an archive, IFP's uncompress plugin will issue a
+warning, and continue.  This normally allows the game to play.  The files
+missing from the uncompression are usually either a "readme" text file, not
+used by the interpreter, or a .ttl game title file, and AGiliTy is usually able
+to run a game that is missing its title file. 
+
+Although not very helpful, AGiliTy may print the path to the game file it is
+running in place of the game title.  To solve this annoyance you need to place
+an unzip program on your path that can handle "shrunk" compression.
+
+AGT games often assume that they are being displayed on 80x25, fixed font
+screens, so on occasions you may need to alter the display window dimensions
+when running such games to get them to display properly.  Please see the
+AGiliTy Glk port readme notes for more information.
+ 
+
+AdvSys games
+
+AdvSys games are contained totally within a single system file.  The few
+example games I have been able to locate use the extension .dat, or are
+distributed as a .dat file together with assorted supporting material in a .zip
+archive.
+
+There is an element of filename confusion here, since Infocom games may have
+.dat file names, and to add to the confusion, Alan also has .dat files.  IFP is
+unaffected by this since it ignores a game's file name.  AdvSys files contain a
+well-defined and easily found signature.
+ 
+
+Level 9 games
+
+Level 9 games can come in a variety of formats, but the only one with anything
+close to a recognizable signature in it that the interpreter can understand is
+the Spectrum "snapshot" format, usually contained in a file with the extension
+.sna.  Interpreters that understand this format generally implement a
+sequential scan through the memory snapshot data until they find the runnable
+part of the game (the Level 9 "A-code").
+
+Though there is no defined .sna signature, observation shows that bytes at
+offsets one to four in the file are generally 0x58, 0x27, 0x9b, 0x36, so this
+is what the interpreter plugin will search for.  If you have a .sna file
+containing a Level 9 game, and it matches this format, IFP binaries will be
+able to recognize and run it directly.
+
+If however the data is in "raw" format, or if you have a .sna file that happens
+not to contain the signature that IFP is looking for, you can add an artificial
+signature - "LVL9" in the first four bytes - and the Level 9 plugin will find
+this signature and respond to it.  To add this signature under Linux, you can
+use a command like
+
+    ( echo "LVL9"; cat somefile.dat ) >somefile.lev
+
+to do this.  IFP binaries will now recognize the file "somefile.lev" as a
+Level 9 game file.
+
+The IF archive contains a number of Level 9 games in snapshot format in the
+file level9.zip inside the Spectrum games subdirectory, and the Level 9
+interpreter can play all games from version 2 to version 4.  All of these game
+files have the .sna signature for which the IFP Level 9 plugin searches.
+
+To manipulate other Level 9 game file formats, in particular .Z80, you might
+want to investigate the 'spconv' tool, also available from the IF Archive.
+ 
+
+Magnetic Scrolls games
+
+By convention, Magnetic Scrolls games are held as a game text data file,
+usually having the extension .MAG, and an optional game pictures (graphics)
+file, with the extension .GFX.  If both files exist, they should have the same
+base file name, and be held side by side in the same directory, so that Glk
+Magnetic can find them both correctly.
+
+A game may offer an additional .HNT file, containing game hints.  If available,
+this file should also have the same base name as the main game, and live in the
+same directory, so that Glk Magnetic can find it automatically.  This may mean
+copying or renaming files on occasion.  For example, the Magnetic Windows
+"Collection" games come with one hints file, COLL.HNT, so to make this work
+with Corruption, for example, you would need to copy COLL.HNT to CCORRUPT.HNT,
+and make sure that the files CCORRUPT.MAG, CCORRUPT.GFX, and CCORRUPT.HNT are
+all in the same directory.
+
+The .MAG file has the signature that IFP looks for ("MaSc" in the first four
+bytes).  If there is an associated graphics file, the Glk port will display
+pictures appropriate to the game.  Otherwise, it will run in text mode only.
+If hints are available, then Glk Magnetic will use them, otherwise, it will run
+the game without hints.
+ 
+
+Adrift games
+
+Adrift games are held as a single game data file, having the extension .taf.
+IFP's Adrift interpreter is SCARE, which handles Adrift version 4.00, 3.90,
+and 3.80 games seamlessly.
+
+SCARE will attempt to render game graphics if they are embedded in the .taf
+file itself, and you are playing using a graphical Glk library.  It does this
+using the xv image display program, only for Adrift version 4.00 games.  If you
+do not have xv installed on you system, you can create a small script to run in
+its place, one that runs an alternative image viewer, and place that somewhere
+on your $PATH.  For example:
+
+  #!/bin/sh
+  kuickshow "$@"
+
+SCARE is a C port of jAsea, a Java Adrift interpreter created by Mark J.
+Tilford, who reverse engineered the official Adrift runner.   The Adrift TAF
+file file format is not published or open, nor is Adrift code.  As a result,
+some of SCARE's actions may not fully match the real Adrift runner, in some
+areas.  However, a variety of Adrift games are fully playable with SCARE.
+
+
+Quest games
+
+Quest games are held as a single game data file, either compiled, with the
+extension .cas, or as plain text with the extension .asl.  IFP's Quest
+interpreter is Geas, which can handle either.
+
+Recognizing .cas files is simple, as they begin with "QCFG002".  .asl files
+lack any definable signature.  As an expedient solution, IFP looks for the
+string "define game" within the first few lines of the file.
+
+The Geas interpreter currently lacks game save and restore, and transcripts
+and replay.
+
+
+Glk libraries
+
+IFP comes with several different Glk libraries.  The simplest is cheapglk,
+which works on dumb terminals.  Glkterm is curses-based, and will work on
+most ANSI terminals, inside Xterm, Konsole, and so on.  Neither offers any
+form of graphics.  Use -glk cheapglk or -glk glkterm to select these libraries.
+
+Xglk is a basic Xwindows Glk display library.  It can display graphics, though
+not always rapidly.  It has a limited range of fonts, but has the advantage
+of not needing many other system libraries.  The file Xglk.defs, supplied
+with IFP, offers some X resource settings that make Xglk look a little less
+spartan than its default settings.  Select with -glk xglk.
+
+Garglk is a graphical Glk library based on freetype.  It offers almost all
+Glk features, the most notable exception being hyperlinks.  This makes it an
+decent choice for most games, but not ideal for Gamebox.  Select with -glk
+garglk.  Garglk reads a configuration file from, among other places,
+/etc/garglk.ini.
+
+Gtkglk is a graphical Glk library based on Gtk.  Like garglk, it offers most
+Glk features, including hyperlinks.  Select with -glk gtkglk.  Gtkglk and
+Frotz do not always work together well; for some reason, gtkglk does not
+display the upper text grid window correctly.  If you want to use gtkglk with
+Z-machine games, you should probably route these games to Nitfol.
+
+As well as supplied Glk libraries, IFP can use any Glkloader format library.
+To use one, supply the full path to the DSO with the -glk option.  IFP's own
+Glk libraries are also fully compatible with any main program that uses
+Glkloader format libraries.

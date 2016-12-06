@@ -1,0 +1,54 @@
+diff -Naur git/git-1.1.3/Makefile git_new/git-1.1.3/Makefile
+--- git/git-1.1.3/Makefile	2006-10-31 20:29:20.000000000 -0800
++++ git_new/git-1.1.3/Makefile	2007-08-09 22:08:54.000000000 -0700
+@@ -5,12 +5,13 @@
+ 
+ # Note: when using xglk, do NOT define USE_MMAP in step 2, below.
+ 
+-GLK = cheapglk
++#GLK = cheapglk
+ #GLK = glkterm
+ #GLK = xglk
++GLK = ifppi
+ 
+-GLKINCLUDEDIR = ../$(GLK)
+-GLKLIBDIR = ../$(GLK)
++GLKINCLUDEDIR = ../../../src/ifp
++GLKLIBDIR = ../../../src/ifp
+ GLKMAKEFILE = Make.$(GLK)
+ 
+ # -----------------------------------------------------------------
+@@ -27,8 +28,8 @@
+ 
+ # Best settings for GCC 3. The optimiser in this version of GCC
+ # is somewhat broken, so we can't use USE_DIRECT_THREADING.
+-#CC = gcc -Wall -O3
+-#OPTIONS = -DUSE_MMAP -DUSE_INLINE
++CC = gcc
++OPTIONS = -fPIC -O3 -Wall -DUSE_INLINE
+ 
+ # Mac OS X (PowerPC) settings.
+ #CC = gcc2 -Wall -O3 -no-cpp-precomp
+@@ -63,7 +64,12 @@
+ 	peephole.o terp.o glkop.o search.o git_unix.o \
+ 	savefile.o saveundo.o gestalt.o
+ 
+-all: git
++all: git-$(MAJOR).$(MINOR).$(PATCH).so
++
++PLUGIN_OBJS = ../../git_plugin.o
++git-$(MAJOR).$(MINOR).$(PATCH).so: $(OBJS) $(POBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(OBJS) $(PLUGIN_OBJS) $(LIBS) -lc
+ 
+ git: $(OBJS)
+ 	$(CC) $(OPTIONS) -o git $(OBJS) $(LIBS)
+@@ -72,7 +78,7 @@
+ 	cp git $(INSTALLDIR)/git
+ 
+ clean:
+-	rm -f *~ *.o git
++	rm -f *~ *.o *.so git
+ 
+ $(OBJS): $(HEADERS)
+ 

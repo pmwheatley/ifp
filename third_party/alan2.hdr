@@ -1,0 +1,27 @@
+# Like Z-machine, Alan2 games use the first byte as the version number.  They
+# use the second byte as the minor version number, and the Alan2 2.8
+# interpreter can handle 2.8 games, and 2.7 in compatibility mode.  There is
+# a potential clash with older (version 2) Z-machine games.  Z-machine uses
+# the second file byte as "flags", which could conceivably be 7 or 8.
+# However, and luckily, the only games known to use Z-machine version 2 are
+# Zork I and II, and the "flags" byte for these games is 0x00.  So, a small
+# hole in the Z-machine recognition patterns is necessary to let Alan2 in.
+
+engine_type="Alan"
+engine_name="Alan"
+engine_version="2.8.6"
+
+acceptor_offset=0
+acceptor_length=2
+acceptor_pattern="^02 0(8|7)$"
+
+author_name="Thomas Nilsson"
+engine_home_url="http://welcome.to/alan-if"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"Alan is a simple to use adventure (or interactive fiction) authoring language.
+  Read about it on the web site - http://welcome.to/alan-if\n"
+engine_copyright="Copyright (C) 2001 by Thomas Nilsson, Sweden.\n"

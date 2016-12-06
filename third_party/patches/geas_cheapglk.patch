@@ -1,0 +1,461 @@
+diff -Naur geas_orig/geas-core/GeasRunner.hh geas/geas-core/GeasRunner.hh
+--- geas/geas-core/GeasRunner.hh	2006-12-04 05:32:56.000000000 -0800
++++ geas_new/geas-core/GeasRunner.hh	2007-08-18 22:48:03.000000000 -0700
+@@ -186,6 +186,8 @@
+ public:
+   GeasRunner (GeasInterface *_gi) : gi (_gi) {}
+ 
++  virtual bool is_running() const = 0;
++  virtual std::string get_banner() = 0;
+   virtual void run_command(std::string) = 0;
+ 
+   virtual v2string get_inventory() = 0;
+diff -Naur geas_orig/geas-core/geas-impl.hh geas/geas-core/geas-impl.hh
+--- geas/geas-core/geas-impl.hh	2006-12-12 07:54:06.000000000 -0800
++++ geas_new/geas-core/geas-impl.hh	2007-08-18 22:48:09.000000000 -0700
+@@ -77,12 +77,17 @@
+   std::vector <std::string> function_args;
+   std::string this_object;
+   v2string current_places;
++  bool is_running_;
++  Logger logger;
+   
+ public:
+-  geas_implementation (GeasInterface *in_gi) : GeasRunner (in_gi), undo_buffer (20) {}
++  geas_implementation (GeasInterface *in_gi)
++     : GeasRunner (in_gi), undo_buffer (20), is_running_(true) {}
+   //void set_game (std::string s);
+   void set_game (std::string s);
+ 
++  bool is_running () const;
++  std::string get_banner ();
+   void run_command (std::string);
+   bool try_match (std::string s, bool, bool);
+   match_rv match_command (std::string input, std::string action) const;
+diff -Naur geas_orig/geas-core/geas-runner.cc geas/geas-core/geas-runner.cc
+--- geas/geas-core/geas-runner.cc	2006-12-19 13:46:31.000000000 -0800
++++ geas_new/geas-core/geas-runner.cc	2007-08-20 17:53:04.000000000 -0700
+@@ -750,8 +750,10 @@
+   try 
+     {
+       gf = read_geas_file (gi, s);
+-      if (gf.blocks.size() == 0)
++      if (gf.blocks.size() == 0) {
++        is_running_ = false;
+ 	return;
++      }
+       //print_formatted ("Ready...|n|cbblack|crred|clblue|cggreen|cyyellow|n|uunderlined: |cbblack|crred|clblue|cggreen|cyyellow|xu|n");
+       //cerr << "Read game " << gf << endl;
+       uint tok_start, tok_end;
+@@ -1135,10 +1137,61 @@
+   return s;
+ }
+ 
++bool geas_implementation::is_running () const
++{
++  return is_running_;
++}
++
++std::string geas_implementation::get_banner ()
++{
++  string banner;
++  const GeasBlock *gb = gf.find_by_name ("game", "game");
++  if (gb)
++    {
++      string line = gb->data[0];
++      uint c1, c2;
++      string tok = first_token (line, c1, c2);
++      tok = next_token (line, c1, c2);
++      tok = next_token (line, c1, c2);
++      if (is_param (tok))
++        {
++          banner = eval_param (tok);
++
++          for (uint i = 0; i < gb->data.size(); i ++)
++            {
++              line = gb->data[i];
++              if (first_token (line, c1, c2) == "game" &&
++                  next_token (line, c1, c2) == "version" &&
++                  is_param (tok = next_token (line, c1, c2)))
++                {
++                  banner += ", v";
++                  banner += eval_param (tok);
++                }
++            }
++  
++          for (uint i = 0; i < gb->data.size(); i ++)
++            {
++               line = gb->data[i];
++               if (first_token (line, c1, c2) == "game" &&
++                   next_token (line, c1, c2) == "author" &&
++                   is_param (tok = next_token (line, c1, c2)))
++                {
++                  banner += " | ";
++                  banner += eval_param (tok);
++                }
++            }
++        }
++    }
++  return banner;
++}
++
+ void geas_implementation::run_command (string s)
+ {
+   /* if s == "restore" or "restart" or "quit" or "undo" */
+ 
++  if (!is_running_)
++    return;
++
+   print_newline();
+   print_normal("> " + s);
+   print_newline();
+@@ -2029,8 +2082,8 @@
+   
+   if (ci_equal (cmd, "quit"))
+     {
+-      exit(0);
+-      // TODO 
++      is_running_ = false;
++      return true;
+     }
+ 
+   return false;
+diff -Naur geas_orig/geas-core/geas-util.cc geas/geas-core/geas-util.cc
+--- geas/geas-core/geas-util.cc	2006-12-04 05:32:57.000000000 -0800
++++ geas_new/geas-core/geas-util.cc	2007-08-17 17:32:38.000000000 -0700
+@@ -223,3 +223,42 @@
+     cerr << "<" << tmp[i] << ">, ";
+   cerr << "\n";
+ }
++
++
++Logger::Nullstreambuf Logger::cnull;
++
++Logger::Logger ()
++    : logfilestr_(NULL), cerrbuf_(NULL)
++{
++  cerr.flush ();
++
++  const char *const logfile = getenv ("GEAS_LOGFILE");
++  if (logfile)
++    {
++      ofstream *filestr = new ofstream (logfile);
++      if (filestr->fail ())
++        delete filestr;
++      else
++        {
++          logfilestr_ = filestr;
++          cerrbuf_ = cerr.rdbuf (filestr->rdbuf ());
++        }
++    }
++
++  if (!cerrbuf_)
++    cerrbuf_ = cerr.rdbuf (&cnull);
++}
++
++Logger::~Logger () {
++  cerr.flush ();
++
++  cerr.rdbuf (cerrbuf_);
++  cerrbuf_ = NULL;
++
++  if (logfilestr_)
++    {
++      logfilestr_->close ();
++      delete logfilestr_;
++      logfilestr_ = NULL;
++    }
++}
+diff -Naur geas_orig/geas-core/geas-util.hh geas/geas-core/geas-util.hh
+--- geas/geas-core/geas-util.hh	2006-12-04 05:32:57.000000000 -0800
++++ geas_new/geas-core/geas-util.hh	2007-08-17 17:34:10.000000000 -0700
+@@ -30,6 +30,8 @@
+ #include <string>
+ #include "readfile.hh"
+ #include <map>
++#include <iostream>
++#include <fstream>
+ 
+ typedef std::vector<std::string> vstring;
+ 
+@@ -90,4 +92,25 @@
+ 
+ template <class KEYTYPE, class VALTYPE> bool has (std::map<KEYTYPE, VALTYPE> m, KEYTYPE key) { return m.find (key) != m.end(); };
+ 
++class Logger
++{
++ public:
++  Logger ();
++  ~Logger ();
++
++ private:
++  class Nullstreambuf : public std::streambuf
++  {
++   protected:
++    int overflow (int c)
++    {
++      return traits_type::not_eof (c);
++    }
++  };
++
++  std::ofstream *logfilestr_;
++  std::streambuf *cerrbuf_;
++  static Nullstreambuf cnull;
++};
++
+ #endif
+diff -Naur geas_orig/glk-ui/geasglk.cc geas/glk-ui/geasglk.cc
+--- geas/glk-ui/geasglk.cc	2006-12-05 05:54:44.000000000 -0800
++++ geas_new/glk-ui/geasglk.cc	2007-08-20 17:44:34.000000000 -0700
+@@ -15,6 +15,8 @@
+   Glk Window arrangment.
+ 
+     +---------+
++    |    B    |
++    +---------+
+     |         |
+     |    M    |
+     |         |
+@@ -22,10 +24,14 @@
+     |    I    |
+     +---------+
+ 
++  B is a one line "banner window", showing the game name and author.  Kept
++  in the global variable, it's optional, null if unavailable.
++  optional.
+   M is the main window where the text of the game appears.  Kept in the
+   global variable mainglkwin.
+   I is a one line "input window" where the user inputs their commands.
+-  Kept in the global variable inputwin.
++  Kept in the global variable inputwin, it's optional, and if not separate
++  is set to mainglkwin.
+ 
+   Maybe in future revisions there will be a status window (including a
+   compass rose).
+@@ -65,9 +71,16 @@
+ 
+ winid_t mainglkwin;
+ winid_t inputwin;
++winid_t bannerwin;
+ strid_t inputwinstream;
+ 
+-extern const char *storyfilename;       /* defined in geasglkterm.c */
++extern const char *storyfilename;  /* defined in geasglkterm.c */
++extern int use_inputwindow;
++
++static int ignore_lines = 0;  /* count of lines to ignore in game output */
++
++static std::string banner;
++static void draw_banner();
+ 
+ void glk_main(void)
+ {
+@@ -80,59 +93,76 @@
+     }
+     glk_set_window(mainglkwin);
+ 
+-    inputwin = glk_window_open(mainglkwin,
+-        winmethod_Below | winmethod_Fixed,
+-        1,
+-        wintype_TextBuffer,
+-        0);
+-
+-    if (!inputwin) {
++    if (!storyfilename) {
++        glk_put_string("No game name or more than one game name given.\n"
++                       "Try -h for help.\n");
+         return;
+     }
+ 
++    bannerwin = glk_window_open(mainglkwin,
++                                winmethod_Above | winmethod_Fixed,
++                                1, wintype_TextGrid, 0);
++
++    if (use_inputwindow)
++        inputwin = glk_window_open(mainglkwin,
++                                   winmethod_Below | winmethod_Fixed,
++                                   1, wintype_TextBuffer, 0);
++    else
++        inputwin = NULL;
++
++    if (!inputwin)
++        inputwin = mainglkwin;
++
+     inputwinstream = glk_window_get_stream(inputwin);
+ 
+     if (!glk_gestalt(gestalt_Timer, 0))
+-    {
+-      glk_put_string(
+-        "** The underlying Glk library does not support timers.\n"
+-        "** If this game tries to use timers, then some\n"
+-        "** functionality may not work correctly.\n"
+-        );
+-    }
++        glk_put_string( "\nNote -- The underlying Glk library does not support"
++                        " timers.  If this game tries to use timers, then some"
++                        " functionality may not work correctly.\n\n");
+ 
+     GeasRunner *gr = GeasRunner::get_runner(new GeasGlkInterface());
+     gr->set_game(storyfilename);
++    banner = gr->get_banner();
++    draw_banner();
+ 
+     glk_request_timer_events(1000);
+ 
+-    char buf[200];
+-    bool prompt = 1;
+-
+-    while(1) {
+-        if(prompt) {
++    while(gr->is_running()) {
++        if (inputwin != mainglkwin)
+             glk_window_clear(inputwin);
+-            glk_put_string_stream(inputwinstream, "> ");
+-            glk_request_line_event(inputwin, buf, (sizeof buf) - 1, 0);
+-            prompt = 0;
+-        }
++        else
++            glk_put_cstring("\n");
++        glk_put_string_stream(inputwinstream, "> ");
++
++        char buf[200];
++
++        glk_request_line_event(inputwin, buf, (sizeof buf) - 1, 0);
+ 
+         event_t ev;
++        ev.type = evtype_None;
+ 
+-        glk_select(&ev);
++        while(ev.type != evtype_LineInput) {
++            glk_select(&ev);
+ 
+-        switch(ev.type) {
+-        case evtype_LineInput:
+-            if(ev.win == inputwin) {
+-                std::string cmd = std::string(buf, ev.val1);
+-                gr->run_command(cmd);
+-                prompt = 1;
++            switch(ev.type) {
++            case evtype_LineInput:
++                if(ev.win == inputwin) {
++                    std::string cmd = std::string(buf, ev.val1);
++                    if(inputwin == mainglkwin)
++                        ignore_lines = 2;
++                    gr->run_command(cmd);
++                }
++                break;
++
++            case evtype_Timer:
++                gr->tick_timers();
++                break;
++
++            case evtype_Arrange:
++            case evtype_Redraw:
++                draw_banner();
++                break;
+             }
+-            break;
+-
+-        case evtype_Timer:
+-            gr->tick_timers();
+-            break;
+         }
+     }
+ }
+@@ -140,6 +170,21 @@
+ } /* extern "C" */
+ 
+ void
++draw_banner()
++{
++  if (bannerwin)
++    {
++      glk_window_clear(bannerwin);
++      glk_window_move_cursor(bannerwin, 0, 0);
++      strid_t stream = glk_window_get_stream(bannerwin);
++      if (banner.empty())
++        glk_put_string_stream(stream, (char*)"Geas 0.4");
++      else
++        glk_put_string_stream(stream, (char*)banner.c_str());
++    }
++}
++
++void
+ glk_put_cstring(const char *s)
+ {
+     /* The cast to remove const is necessary because glk_put_string
+@@ -151,14 +196,19 @@
+ GeasResult
+ GeasGlkInterface::print_normal (std::string s)
+ {
+-    glk_put_cstring(s.c_str());
++    if(!ignore_lines)
++        glk_put_cstring(s.c_str());
+     return r_success;
+ }
+ 
+ GeasResult
+ GeasGlkInterface::print_newline ()
+ {
+-    return print_normal ("\n");
++    if (!ignore_lines)
++        glk_put_cstring("\n");
++    else
++        ignore_lines--;
++    return r_success;
+ }
+ 
+ 
+diff -Naur geas_orig/glk-ui/geasglkterm.c geas/glk-ui/geasglkterm.c
+--- geas/glk-ui/geasglkterm.c	2006-12-04 08:36:43.000000000 -0800
++++ geas_new/glk-ui/geasglkterm.c	2007-08-18 19:12:23.000000000 -0700
+@@ -5,20 +5,21 @@
+ 
+   Copyright (C) 2006 David Jones.  Distribution or modification in any
+   form permitted.
+-
+-  Unix specific (see the call to close()).
+ */
+ 
+ #include <stddef.h>
++#include <string.h>
+ 
+ #include <unistd.h>
+ 
+ #include "glk.h"
+ #include "glkstart.h"
+ 
+-const char *storyfilename;
++const char *storyfilename = NULL;
++int use_inputwindow = 0;
+ 
+ glkunix_argumentlist_t glkunix_arguments[] = {
++    { "-w", glkunix_arg_NoValue,    "-w:       Use a separate input window."},
+     { "", glkunix_arg_ValueFollows, "filename: The game file to load."},
+     { NULL, glkunix_arg_End, NULL }
+ };
+@@ -26,15 +27,15 @@
+ int
+ glkunix_startup_code(glkunix_startup_t *data)
+ {
+-  storyfilename = data->argv[1];
++  int i = 1;
+ 
+-  if (storyfilename) {
+-    /* We close stderr because the Geas core prints a lot of debug stuff
+-     * to stderr.  This corrupts the curses based display unless
+-     * redirected.
+-     */
+-    close(2);
+-    return 1;
++  if (data->argc > 1 && strcmp (data->argv[i], "-w") == 0) {
++      use_inputwindow = 1;
++      i++;
+   }
+-  return 0;
++
++  if (i == data->argc - 1)
++      storyfilename = data->argv[i];
++
++  return 1;
+ }

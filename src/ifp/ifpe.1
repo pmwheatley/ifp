@@ -1,0 +1,113 @@
+.\" vim: set syntax=nroff:
+.\"
+.\" Copyright (C) 2001-2007  Simon Baldwin (simon_baldwin@yahoo.com)
+.\" 
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version 2
+.\" of the License, or (at your option) any later version.
+.\" 
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\" 
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307
+.\" USA
+.\"
+.\"
+.TH IFPE 1 "Interactive Fiction Plugins" "IFP" \" -*- nroff -*-
+.SH NAME
+.\"
+ifpe \- multi-format Interactive Fiction interpreter
+.\"
+.\"
+.\"
+.SH SYNOPSIS
+.\"
+.B ifpe
+[-glk glk_library] [glk_library_options] file | URL
+.PP
+.\"
+.\"
+.\"
+.SH DESCRIPTION
+.\"
+.PP
+.B ifpe
+interprets Interactive Fiction games, using a system of interpreter
+plugins to decode the games held in input file of various formats.  The
+current release of \fBifpe\fP can handle the following game formats:
+.PP
+Z-machine, TADS, HUGO, Alan, Glulx, AGT, AdvSys, Level9 SNA, Magnetic
+Scrolls, Adrift, Quest, and Blorb
+.PP
+It can also directly handle compressed, gzipped, and bzipped data files,
+zip, tar, and cpio archives, and Internet URLs that reference files of
+the above types.
+.PP
+.B ifpe
+loads its Glk library on starting, and can work with any of the Glk
+libraries supplied by IFP.  The \fI-glk\fP option requests a specific Glk
+library, otherwise \fBifpe\fP will use the value set by IFP_GLK_LIBRARIES
+or by the IFP configuration file.
+.PP
+.B ifpe
+takes a single input argument.  This is a path to a game file to run, a path
+to a compressed data file, or archive, containing a valid game file, or an
+Internet URL that references a game file or archive.
+.PP
+.\"
+.\"
+.\"
+.SH EXAMPLES
+.\"
+To run "A Change In The Weather" from a compressed local disk file in /tmp,
+using the curses-based Glk library:
+.IP
+.nf
+ifpe -glk glkterm /tmp/weather.z5.gz
+.fi
+.PP
+.\"
+To run "A Bear's Night Out" from the Interactive Fiction archive on the
+Internet, using the default Glk library:
+.IP
+.nf
+ifpe http://www.ifarchive.org/if-archive/games/zcode/bear.z5
+.fi
+.PP
+.\"
+.\"
+.\"
+.SH ENVIRONMENT VARIABLES
+.\"
+IF_PLUGIN_PATH is a colon-separated string that defines the path to search
+for Interactive Fiction and Glk plugins.  If there is no defined value, the
+default is "/usr/local/lib/ifp:/usr/lib/ifp".
+.PP
+.\"
+IFP_GLK_LIBRARIES is a comma-separated string that indicates which Glk
+libraries to search for on starting.  Glk libraries can be named either
+partially or fully, for example "xglk" or "glkterm-0.7.8", and are loaded
+from IF_PLUGIN_PATH.  Alternatively, an entry can be a full path to a
+loadable Glk library.  The default is "xglk" where DISPLAY is set,
+"glkterm" where TERM is set, or "cheapglk" otherwise. 
+.\"
+.\"
+.\"
+.SH CONFIGURATION FILES
+.\"
+$HOME/.ifprc
+.br
+/etc/ifprc
+.\"
+.\"
+.\"
+.SH SEE ALSO
+.\"
+Man pages for \fBlegion\fP(1), \fBifphdr\fP(1), \fBifplib\fP(3),
+and \fBifppilib\fP(3).
+.\"

@@ -1,0 +1,93 @@
+
+Garbage-collection after running a game interpreter may not be complete, or
+sufficient.
+
+Playing a Z-machine multiple times seems to leak away about 100Kb of memory
+on each iteration.  Because plugins are garbage-collected, it is hard to see
+how the leak is from re-running the Nitfol plugin.  But the effect seems more
+evident with this than any other plugins, which suggests a connection to the
+plugin.  There may be a leak in Glk styles and hints code that is triggered
+by Nitfol.  Or it may be something else.
+
+When running multiple games that use image resources, IFP cannot fully reset
+the state of Glk's cached resource maps.  For the moment, you may see odd
+problems with image display (incorrect sizing, incorrect image) with legion.
+
+IFP may misuse several attributes of the Glk API.  It certainly uses at least
+one internal Glk function that it would be better not to use.
+
+IFP is extremely sensitive to revisions or extensions to Glk.  Because
+libifppi replicates every Glk function, any changes or additions to Glk means
+the same changes to IFP.
+
+URLs are not well integrated into the rest of IFP.
+
+Where multiple plugins appear able to run a file, IFP selects only the first
+found.
+
+The only HTTP request status codes handled are 200 (success) and 404 (document
+not found).  In particular, HTTP redirections should be possible.
+
+FTP server status codes are not fully dissected or differentiated.  The FTP
+response for where a file is absent is the same one as for where the file
+exists but there is no permission for the server to read it.
+
+The URL cache persists only as long as the main program is running.  More
+useful would be to make the cache persistent across program runs, or even
+across all IFP clients.
+
+The internal workings of dup2 are unclear.
+
+Acceptor patterns may not be right for all of the game plugins.  Acceptor
+patterns are limited; multiple patterns with AND and OR operations might be
+needed at some point.
+
+Chaining plugins are a real nuisance with the Linux dynamic loader.  If it
+sees that a process has already loaded a particular file, checked by inode
+number, it will return the same handle to the shared object, and increment the
+object's reference.  This is not useful for IFP, which requires separate
+address spaces for the static variables in multiple loaded instances.  To
+solve this, IFP currently copies the entire library, then reloads it.
+
+The unarchiving plugin searches sequentially through the top level of the
+archive just unpacked, and plays only the first playable game file found.
+This is inflexible.
+
+Some IFP data structures are singly linked lists, and would be better as
+doubly linked lists.
+
+IFP resets various things inside of Glk without really knowing what it is
+doing.  Glk seems to be able to withstand this, which is great.
+
+URL parsing may be wrong, either slightly or completely.
+
+There may be a better way to intercept malloc(), free(), and its cousins in
+a plugin than the way IFP currently does things.
+
+IFP sets up some signal handlers, mostly so it can delete temporary files when
+the application exits through something like SIGTERM or SIGINT.  However, by
+the time it gets the chance to set the handlers, Glk has already called dibs
+on them.  To try to cope, IFP saves the addresses that Glk put in the handlers,
+then installs its own.  On receiving one of these signals, IFP will call the
+original handler before performing its own signal-handling dance.  Is there a
+better way to handle this?
+
+The way in which the registered options data is passed forwards through
+chaining plugins might benefit from another look.
+
+The whole interpreter options area is incomplete, anyway.
+
+Is there any sense in a plugin that can dig games out of Apple II disk images?
+Or one that can find and run the game text part of a DOS exe IF game?
+
+IFP might handle the thorny issue of how to offer hooks for games programs to
+control things like saving and restoring games, restarting or quitting the
+current game.
+
+IFP does nothing to support the possibility of using threads to run multiple
+games simultaneously.
+
+Even in the presence of threads, IFP needs a way to be able to run multiple
+plugins at the same time, perhaps requiring a "session ID" extension to Glk.
+
+The Xglk library should be built with sound support, but it's not.

@@ -1,0 +1,60 @@
+diff -Naur scare/scare-1.3.7/source/Makefile scare_new/scare-1.3.7/source/Makefile
+--- scare/scare-1.3.7/source/Makefile	2007-06-26 21:25:56.000000000 -0700
++++ scare_new/scare-1.3.7/source/Makefile	2007-08-10 20:54:41.000000000 -0700
+@@ -28,7 +28,7 @@
+ # GCC compiler and linker flags.
+ CC	= gcc
+ DEBUG	=
+-CEXTRA	=
++CEXTRA	= -std=gnu99 -I ../../../../src/ifp -DLINUX_GRAPHICS
+ CFLAGS	= -O2 -D__NO_STRING_INLINES -fPIC -ansi -D_STRICT_ANSI_ -Wall -W   \
+ 	  -pedantic -Wshadow -Wpointer-arith -Wstrict-prototypes	   \
+ 	  -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls	   \
+@@ -49,11 +49,11 @@
+ #LDFLAGS=
+ 
+ # Glk library selection and library location.
+-GLK	= xglk
++GLK	= ifppi
+ #GLK	= glkterm
+ #GLK	= cheapglk
+ #GLK	= winglk
+-GLKDIR	= ../..
++GLKDIR	= ../../../../src/ifp
+ 
+ # Glk platform selection; normally, the platform's compiler will define
+ # one of these automatically, but if not, pick one to suit your system.
+@@ -71,7 +71,7 @@
+ # This will of course make GLKLIBS gibberish, but we'll check that later.
+ # If your make can't handle sinclude or -include, and you're not building
+ # for Glk, comment out the include line.
+-GLKPATH	= $(GLKDIR)/$(GLK)
++GLKPATH	= $(GLKDIR)
+ sinclude $(GLKPATH)/Make.$(GLK)
+ GLKLIBS	= -L$(GLKPATH) $(GLKLIB) $(LINKLIBS)
+ 
+@@ -137,18 +137,18 @@
+ 
+ # Option to build an IFP plugin version of SCARE.
+ scare_plugin.c: scare.hdr
+-	ifphdr $< >$@
++	$(GLKDIR)/ifphdr $< >$@
+ 
+ scare_plugin.o: scare_plugin.c
+ 	@$(TEST) -n "$(GLKLIB)" \
+ 		|| ( echo "Could not include $(GLKPATH)/Make.$(GLK)"; exit 1 )
+ 	$(CC) -I$(GLKPATH) $(CFLAGS) -c -o $@ $<
+ 
+-PLIBS = -lifppi
+-POBJS = scare_plugin.o
+-scare-$(VERSION).so: $(ZOBJECTS) $(OBJECTS) os_glk.o $(POBJS)
+-	$(LD) -u ifpi_force_link -shared -Bsymbolic			\
+-		-o $@ $(ZOBJECTS) $(OBJECTS) os_glk.o $(PLIBS) $(POBJS) -lc
++PLUGIN_OBJS = scare_plugin.o
++scare-$(VERSION).so: $(ZOBJECTS) $(OBJECTS) os_glk.o $(PLUGIN_OBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic		\
++		-o $@ $(ZOBJECTS) $(OBJECTS) os_glk.o $(PLUGIN_OBJS)	\
++		$(GLKLIBS) -lc
+ 
+ # Cleanup.
+ clean:

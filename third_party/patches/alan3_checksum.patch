@@ -1,0 +1,15 @@
+diff -Naur alan3/interpreter/main.c alan3_new/interpreter/main.c
+--- alan3/interpreter/main.c	2006-08-03 11:53:10.000000000 -0700
++++ alan3_new/interpreter/main.c	2007-07-30 21:50:14.000000000 -0700
+@@ -1120,7 +1120,11 @@
+     sprintf(err, "Checksum error in Acode (.a3c) file (0x%lx instead of 0x%lx).",
+ 	    crc, tmphdr.acdcrc);
+     if (!ignoreErrorOption)
++#if 0
+       syserr(err);
++#else
++      output("[ Note: checksum was ignored when loading this game. ]$n");
++#endif
+     else {
+       output("<WARNING! $$");
+       output(err);

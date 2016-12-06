@@ -1,0 +1,29 @@
+# Glulx data files have a nice, easy-to-spot format, that isn't likely to
+# conflict with other game files.  They begin with either "Glul".  This plugin
+# can also handle GLUL exectuables in Blorb files.
+
+engine_type="Glulx"
+engine_name="Git"
+engine_version="1.1.6"
+
+blorb_pattern="^47 4c 55 4c$"
+
+acceptor_offset=0
+acceptor_length=4
+acceptor_pattern="^47 6c 75 6c$"
+
+author_name="Iain Merrick"
+author_email="iain@diden.net"
+engine_home_url="http://diden.net/if/git"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"Git is an interpreter for the Glulx virtual machine.  Its main goal in life
+ is to be fast. It is about five times faster than Glulxe, and about twice as
+ fast as Frotz (using the same Inform source compiled for the Z-machine).\n"
+engine_copyright="Git is copyright (c) 2004 Iain Merrick.\n
+It is freeware: you may redistribute it however you like, as long as you
+ include this copyright message and the URL of the Git homepage in a
+ reasonably prominent place.\n"

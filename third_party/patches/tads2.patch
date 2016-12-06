@@ -1,0 +1,170 @@
+diff -Naur tads2/glk/Makefile tads2_new/glk/Makefile
+--- tads2/glk/Makefile	2003-03-12 22:36:06.000000000 -0800
++++ tads2_new/glk/Makefile	2007-08-10 21:07:17.000000000 -0700
+@@ -30,11 +30,11 @@
+ #
+ # X Glk
+ #
+-#GLKINCLUDEDIR = ./xglk/
+-#GLKLIBDIR = ./xglk/
+-#GLKMAKEFILE = Make.xglk
+-#GLKEXEFILE = xtads
+-#GLKFLAGS = -DXGLK -DGLKUNIX -DGLK
++GLKINCLUDEDIR = ../../../src/ifp/
++GLKLIBDIR = ../../../src/ifp/
++GLKMAKEFILE = Make.ifppi
++GLKEXEFILE = xtads
++GLKFLAGS = -DXGLK -DGLKUNIX -DGLK
+ 
+ #
+ # CheapGlk
+@@ -55,10 +55,10 @@
+ # For Slackware distributions, use
+ #OSFLAGS = -DLINUX -DOS_TYPES_DEFINED
+ # For Red Hat, use
+-#OSFLAGS = -DLINUX
++OSFLAGS = -DLINUX
+ # For all, use the following:
+-#OPTIMIZE = -O2 -funroll-loops -fomit-frame-pointer -m486
+-#OSLIBS = -lc
++OPTIMIZE = -O2
++OSLIBS = -lc
+ 
+ #
+ # Sun Solaris
+@@ -116,7 +116,7 @@
+ # added osifc.o
+ # objects in common to all executables
+ COMMONOBJS= $(LIBOBJS) mcm.o mcs.o mch.o obj.o cmd.o \
+-            errmsg.o dummy.o fioxor.o oserr.o runstat.o \
++            errmsg.o fioxor.o oserr.o runstat.o \
+ 	    fio.o getstr.o cmap.o askf_os.o indlg_tx.o osifc.o
+ 
+ # objects common to the runtime objects (debugger and runtime)
+@@ -158,6 +158,12 @@
+ $(GLKEXEFILE): $(TROBJS)
+ 	$(CC) $(CFLAGS) $(TROBJS) -o $(GLKEXEFILE) $(LIBS)
+ 
++PLUGIN_OBJS = ../../tads2_plugin.o
++tads-2.5.10.so: $(TROBJS) $(POBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(TROBJS) $(PLUGIN_OBJS) \
++		-L$(GLKLIBDIR) $(GLKLIB) $(LINKLIBS) -lc
++
+ .c.o:
+ 	$(CC) -c $(CFLAGS) $(INCLUDES) $*.c
+ 
+@@ -188,9 +194,6 @@
+ dbgtr.c: ../dbgtr.c
+ 	cp ../dbgtr.c dbgtr.c
+ 
+-dummy.c: ../dummy.c
+-	cp ../dummy.c dummy.c
+-
+ errmsg.c: ../errmsg.c
+ 	cp ../errmsg.c errmsg.c
+ 
+@@ -277,7 +280,7 @@
+ 
+ 
+ clean:
+-	rm -f *~ *.o $(GLKEXEFILE)
++	rm -f *~ *.o *.so $(GLKEXEFILE)
+ 	rm -f askf_os.c
+ 	rm -f askf_tx.c
+ 	rm -f bif.c
+@@ -286,7 +289,6 @@
+ 	rm -f cmap.c
+ 	rm -f dat.c
+ 	rm -f dbgtr.c
+-	rm -f dummy.c
+ 	rm -f errmsg.c
+ 	rm -f execmd.c
+ 	rm -f fio.c
+diff -Naur tads2/glk/os_glk.c tads2_new/glk/os_glk.c
+--- tads2/glk/os_glk.c	2005-02-23 14:31:32.000000000 -0800
++++ tads2_new/glk/os_glk.c	2007-08-10 21:05:33.000000000 -0700
+@@ -821,6 +821,83 @@
+     filename[0] = 0;
+ }
+ 
++void os_nonstop_mode(int flag)
++{
++}
++
++void os_get_path_name(char *pathbuf, size_t pathbuflen, const char *fname)
++{
++    const char *lastsep;
++    const char *p;
++    size_t len;
++    int root_path;
++    
++    /* find the last separator in the filename */
++    for (p = fname, lastsep = fname ; *p != '\0' ; ++p)
++    {
++        /* 
++         *   if it's a path separator character, remember it as the last one
++         *   we've found so far 
++         */
++        if (*p == OSPATHCHAR || strchr(OSPATHALT, *p)  != 0)
++            lastsep = p;
++    }
++    
++    /* get the length of the prefix, not including the separator */
++    len = lastsep - fname;
++    
++    /*
++     *   Normally, we don't include the last path separator in the path; for
++     *   example, on Unix, the path of "/a/b/c" is "/a/b", not "/a/b/".
++     *   However, on Unix/DOS-like file systems, a root path *does* require
++     *   the last path separator: the path of "/a" is "/", not an empty
++     *   string.  So, we need to check to see if the file is in a root path,
++     *   and if so, include the final path separator character in the path.  
++     */
++    for (p = fname, root_path = FALSE ; p != lastsep ; ++p)
++    {
++        /*
++         *   if this is NOT a path separator character, we don't have all
++         *   path separator characters before the filename, so we don't have
++         *   a root path 
++         */
++        if (*p != OSPATHCHAR && strchr(OSPATHALT, *p) == 0)
++        {
++            /* note that we don't have a root path */
++            root_path = FALSE;
++            
++            /* no need to look any further */
++            break;
++        }
++    }
++
++    /* if we have a root path, keep the final path separator in the path */
++    if (root_path)
++        ++len;
++
++#ifdef MSDOS
++    /*
++     *   On DOS, we have a special case: if the path is of the form "x:\",
++     *   where "x" is any letter, then we have a root filename and we want to
++     *   include the backslash.  
++     */
++    if (lastsep == fname + 2
++        && isalpha(fname[0]) && fname[1] == ':' && fname[2] == '\\')
++    {
++        /* we have an absolute path - use the full "x:\" sequence */
++        len = 3;
++    }
++#endif
++    
++    /* make sure it fits in our buffer (with a null terminator) */
++    if (len > pathbuflen - 1)
++        len = pathbuflen - 1;
++
++    /* copy it and null-terminate it */
++    memcpy(pathbuf, fname, len);
++    pathbuf[len] = '\0';
++}
++
+ /* ------------------------------------------------------------------------ */
+ /*
+ ** Some empty routines that we have to have just because

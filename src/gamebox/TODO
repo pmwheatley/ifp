@@ -1,0 +1,36 @@
+
+Updated support for full and final versions of IFMES and iFiction (if and
+when available).  Add support for more iFiction and IFMES RDF properties.
+
+Either verify that all RDF+XML is correctly parsed by Gamebox, or use a
+real RDF parser.  Verify parsing of Ifiction and INI metadata files.
+
+Verify ISO 8601 date display handling.
+
+Update catalog.xml and catalog.ini for accurate game lengths.
+
+Consider making ignoring "The ...", "An ...", or "A ..." when sorting by name
+more internationalized.  Consider more lexical, less ASCII-based sorting.
+
+See if Gamebox can determine if it's nesting, so that Close can be replaced
+by Back in nested sessions.
+
+Improved hyperlink-less interface.  Perhaps a cursor (moving arrow) alongside
+games, with an action key to run them?  Improved hyperlink interface for very
+long catalogs.
+
+Display game and other icons in graphical Glk libraries.
+
+Show, for each game, the IFP plugin it will run on.
+
+Create a dialog to allow metadata updates, and iFiction and IFMES RDF+XML
+editing.  Improved tools for handling XML in general.  Something similar for
+INI?
+
+Improved browsing.  Perhaps pointing Gamebox at a directory could have it
+automatically catalog all games found in that directory (like local file://
+browsing in Mozilla, maybe?).  Extend to http: and ftp:?
+
+Find a better solution to the sigaction() hack in urlhandler.c.
+
+Understand why calling glk_exit() from Gamebox causes problems later on.

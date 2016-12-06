@@ -1,0 +1,22 @@
+diff -Naur garglk/main.c garglk_new/main.c
+--- garglk/main.c	2006-09-08 22:58:26.000000000 -0700
++++ garglk_new/main.c	2007-08-27 20:40:48.000000000 -0700
+@@ -16,6 +16,18 @@
+ 
+ 	gli_startup(argc, argv);
+ 
++	if (argc > 0 && argv[0])
++	{
++		char name[256], *base;
++
++		base = strrchr(argv[0], '/');
++		base = base ? base + 1 : argv[0];
++		strncpy(name, base, sizeof name);
++		name[sizeof name-1] = 0;
++		name[0] = glk_char_to_upper(name[0]);
++		garglk_set_program_name(name);
++	}
++
+ 	if (!glkunix_startup_code(&startdata))
+ 		glk_exit();
+ 

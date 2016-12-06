@@ -1,0 +1,47 @@
+diff -Naur hugo/source/Makefile.unix hugo_new/source/Makefile.unix
+--- hugo/source/Makefile.unix	2003-12-19 13:33:24.000000000 -0800
++++ hugo_new/source/Makefile.unix	2007-08-09 22:40:09.000000000 -0700
+@@ -9,22 +9,23 @@
+ #	hugo/$(GLK) - XGlk, Glkterm, etc. directory (with glk.h and libxglk.a)
+ SOURCE_DIR=../source
+ NONPORTABLE_DIR=.
+-GLK=xglk
++GLK=ifppi
+ #GLK=glkterm
+-GLK_DIR=../$(GLK)
++GLK_DIR=../../../src/ifp
+ XLIB_DIR=/usr/X11R6/lib
+ 
+ # Import Glk LINKLIBS and GLKLIB
+-include ../$(GLK)/Make.$(GLK)
++include $(GLK_DIR)/Make.$(GLK)
+ 
+ # PORT_NAME is for file-naming:
+ PORT_NAME=glk
+ COMPILE=gcc
+ LINK=gcc
+ 
+-DEFINES=-DCOMPILE_V25 -DGLK -DNO_KEYPRESS_CURSOR -DHUGO_INLINE=static\ inline
++#DEFINES=-DCOMPILE_V25 -DGLK -DNO_KEYPRESS_CURSOR -DHUGO_INLINE=static\ inline
++DEFINES=-DGLK -DNO_KEYPRESS_CURSOR -DHUGO_INLINE=static\ inline
+ WFLAGS=-Wall
+-OFLAGS=-O3
++OFLAGS=-O2 -fPIC
+ #DFLAGS=-g
+ CFLAGS=-I$(SOURCE_DIR) -I$(GLK_DIR) $(WFLAGS) $(OFLAGS) $(DFLAGS) $(DEFINES) -c
+ 
+@@ -36,8 +37,13 @@
+ heglk: $(OBJS)
+ 	$(LINK) $(DFLAGS) -o $(TARGET) $(OBJS) -L$(GLK_DIR) $(GLKLIB) -L$(XLIB_DIR) $(LINKLIBS)
+ 
++PLUGIN_OBJS = ../../hugo_plugin.o
++hugo-3.1.so: $(OBJS) $(PLUGIN_OBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(OBJS) $(PLUGIN_OBJS) -L $(GLK_DIR) $(GLKLIB) -lc
++
+ clean:
+-	rm -f $(OBJS)
++	rm -f $(OBJS) hugo-3.1.so
+ 
+ # Portable sources:
+ 

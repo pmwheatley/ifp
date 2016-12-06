@@ -1,0 +1,67 @@
+diff -Naur alan3/interpreter/Makefile.glk alan3_new/interpreter/Makefile.glk
+--- alan3/interpreter/Makefile.glk	2006-01-02 03:28:24.000000000 -0800
++++ alan3_new/interpreter/Makefile.glk	2007-08-09 21:59:21.000000000 -0700
+@@ -2,13 +2,12 @@
+ 
+ # Glk definitions
+ 
+-GLKPREFIX = /home/thoni/Alan/WindowsGlk
+-GLKINCLUDEDIR = $(GLKPREFIX)/include
++GLKPREFIX = ../../../src/ifp
++GLKINCLUDEDIR = $(GLKPREFIX)
+ GLKLIBDIR = $(GLKPREFIX)
+-GLKMAKEFILE = Make.xglk
+-GLKTARGET = xalan
++GLKMAKEFILE = Make.ifppi
++GLKTARGET = alan-3.0.5.so
+ GLK = -DHAVE_GLK
+-GLKLIB = Glk.lib
+ 
+ #A tag describing the type of build 
+ COMPILER = -DCOMPILER=\"[glk]\"
+@@ -26,18 +25,18 @@
+ INSTALLDIR = /usr/local/bin
+ 
+ 
+-#include $(GLKINCLUDEDIR)/$(GLKMAKEFILE)
++include $(GLKINCLUDEDIR)/$(GLKMAKEFILE)
+ 
+ ###  Do not edit below this line  ### 
+ 
+ ARUNOPTS = $(COMPILER) $(VERBOSE) $(CRCLOG) $(PROGNAME) $(GLK)
+ 
+ CC = gcc
+-CFLAGS = -g -Wall -funsigned-char -I$(GLKINCLUDEDIR) $(ARUNOPTS)
++CFLAGS = -fPIC -O2 -Wall -funsigned-char -I$(GLKINCLUDEDIR) $(ARUNOPTS)
+ 
+ LINK = gcc
+ LDFLAGS = -g $(ARUNOPTS)
+-LIBS = $(GLKLIBDIR)/$(GLKLIB) $(LINKLIBS)
++LIBS = -L $(GLKLIBDIR) $(GLKLIB) $(LINKLIBS)
+ 
+ INSTALL = install
+ INSTFLAGS = -g 0 -o 0 -s
+@@ -59,14 +58,21 @@
+ 	readline.o \
+ 	params.o \
+ 	sysdep.o \
++	syserr.o \
++	act.o \
++	save.o \
++	state.o \
++	set.o \
+ 	alan.version.o
+ 
+ # my package didn't include sources for dumpacd
+ #all: $(GLKTARGET) dumpacd
+ all: $(GLKTARGET)
+ 
+-$(GLKTARGET) : $(OBJECTS) $(GLKOBJS)
+-	$(LINK) -o $(GLKTARGET) $(OBJECTS) $(GLKOBJS) $(LDFLAGS) $(LIBS)
++PLUGIN_OBJS = ../../alan3_plugin.o
++$(GLKTARGET): $(OBJECTS) $(GLKOBJS) $(PLUGIN_OBJS)
++	$(CC) -shared -Wl,-u,ifpi_force_link -Wl,-Bsymbolic \
++		-o $@ $(OBJECTS) $(GLKOBJS) $(PLUGIN_OBJS) $(LIBS) -lc
+ 
+ dumpacd: dumpacd.o reverse.o spa.o
+ 	$(LINK) -o dumpacd $(LDFLAGS) dumpacd.o reverse.o spa.o

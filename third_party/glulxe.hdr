@@ -1,0 +1,31 @@
+# Glulx data files have a nice, easy-to-spot format, that isn't likely to
+# conflict with other game files.  They begin with either "Glul".  This plugin
+# can also handle GLUL exectuables in Blorb files.
+
+engine_type="Glulx"
+engine_name="Glulxe"
+engine_version="0.4.2"
+
+blorb_pattern="^47 4c 55 4c$"
+
+acceptor_offset=0
+acceptor_length=4
+acceptor_pattern="^47 6c 75 6c$"
+
+author_name="Andrew Plotkin"
+author_email="erkyrath@eblong.com"
+engine_home_url="http://www.eblong.com/zarf/glk/index.html"
+
+builder_name="Simon Baldwin"
+builder_email="simon_baldwin@yahoo.com"
+
+engine_description=\
+"See the Glk home page at http://www.eblong.com/zarf/glk/index.html.\n"
+engine_copyright="Copyright (C) 1999 by Andrew Plotkin.\n
+The source code in this package is copyright 1999 by Andrew Plotkin. You
+ may copy and distribute it freely, by any means and under any conditions,
+ as long as the code and documentation is not changed. You may also
+ incorporate this code into your own program and distribute that, or modify
+ this code and use and distribute the modified version, as long as you retain
+ a notice in your program or documentation which mentions my name and the
+ URL shown above.\n"
